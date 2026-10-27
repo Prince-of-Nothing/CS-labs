@@ -165,7 +165,7 @@ def build_lab1():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab1", "Report_Lab1_Caesar_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
 
 
@@ -320,7 +320,7 @@ def build_lab2():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab2", "Report_Lab2_Criptanaliza_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
 
 
@@ -457,7 +457,7 @@ def build_lab3():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab3", "Report_Lab3_Vigenere_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
 
 
@@ -583,7 +583,7 @@ def build_lab4():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab4", "Report_Lab4_DES_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
 
 
@@ -722,7 +722,7 @@ def build_lab5():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab5", "Report_Lab5_CheiePublica_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
 
 
@@ -853,12 +853,25 @@ def build_lab6():
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab6", "Report_Lab6_Hash_Semnaturi_Dinu_Plesu.docx")
     U.insert_toc(doc)
-    doc.save(out)
+    U.save(doc, out)
     return out
+
+
+BUILDERS = {1: build_lab1, 2: build_lab2, 3: build_lab3,
+            4: build_lab4, 5: build_lab5, 6: build_lab6}
 
 
 if __name__ == "__main__":
     os.makedirs(IMG, exist_ok=True)
-    for fn in (build_lab1, build_lab2, build_lab3, build_lab4, build_lab5,
-               build_lab6):
-        print("wrote", fn())
+    args = sys.argv[1:]
+    if args and args[0] in ("-h", "--help"):
+        print("usage: build_reports.py [lab ...]     default: every lab")
+        print("example: build_reports.py 3           rebuild Laboratory 3 only")
+        raise SystemExit(0)
+    bad = [a for a in args if not a.isdigit() or int(a) not in BUILDERS]
+    if bad:
+        raise SystemExit("unknown lab(s): %s — choose from %s"
+                         % (" ".join(bad), " ".join(map(str, sorted(BUILDERS)))))
+    chosen = sorted({int(a) for a in args}) if args else sorted(BUILDERS)
+    for n in chosen:
+        print("wrote", BUILDERS[n]())

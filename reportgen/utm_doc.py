@@ -9,6 +9,7 @@ Layout follows the documented UTM template requirements:
 from __future__ import annotations
 
 import os
+import zipfile
 
 from docx import Document
 from docx.enum.section import WD_SECTION
@@ -105,6 +106,32 @@ def ensure_hyperlink_style(doc):
     st = doc.styles.add_style("Hyperlink", WD_STYLE_TYPE.CHARACTER)
     st.font.color.rgb = RGBColor(0x06, 0x45, 0xAD)
     st.font.underline = True
+
+
+ZIP_DATE = (1980, 1, 1, 0, 0, 0)   # pinned zip timestamps => byte-stable rebuilds
+
+
+def save(doc, path):
+    """Write the document with fixed timestamps on every zip member.
+
+    python-docx stamps each part with the wall clock, so rebuilding a report
+    whose content did not change still rewrote the .docx and dirtied git.
+    Every member is written in its original order with a constant date
+    instead, so a rebuild is byte-identical and only real edits show up as
+    modified files.
+    """
+    tmp = path + ".tmp"
+    doc.save(tmp)
+    with zipfile.ZipFile(tmp) as zin:
+        members = [(i, zin.read(i.filename)) for i in zin.infolist()]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for info, data in members:
+            new = zipfile.ZipInfo(info.filename, date_time=ZIP_DATE)
+            new.compress_type = info.compress_type
+            new.external_attr = info.external_attr
+            new.create_system = info.create_system
+            zout.writestr(new, data)
+    os.remove(tmp)
 
 
 def _add_page_field(paragraph):
