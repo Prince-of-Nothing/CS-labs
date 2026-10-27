@@ -1,0 +1,76 @@
+{
+  "_comment": "Single source of truth for the status table in README.md. Edit a flag here, then run: python3 reportgen/build_readme.py",
+  "student": "Dinu Plesu",
+  "group": "FAF-241",
+  "supervisor": "Maia Zaica",
+  "discipline": "Cryptography and Security",
+  "university": "Technical University of Moldova",
+  "faculty": "Faculty of Computers, Informatics and Microelectronics",
+  "department": "Department of Computer Science and Information Technologies",
+  "repository": "https://github.com/Prince-of-Nothing/CS-labs.git",
+  "labs": [
+    {
+      "id": "1",
+      "dir": "Lab1",
+      "topic": "Caesar cipher and Caesar cipher with a keyword over the Romanian alphabet",
+      "language": "Go",
+      "report": "Lab1/Report_Lab1_Caesar_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "2",
+      "dir": "Lab2",
+      "topic": "Cryptanalysis of monoalphabetic ciphers — frequency analysis attack (variant V20)",
+      "language": "Go",
+      "report": "Lab2/Report_Lab2_Criptanaliza_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "3",
+      "dir": "Lab3",
+      "topic": "Polyalphabetic ciphers — the Vigenère cipher over the Romanian alphabet (task 3.2)",
+      "language": "Go",
+      "report": "Lab3/Report_Lab3_Vigenere_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "4",
+      "dir": "Lab4",
+      "topic": "Block ciphers — the DES algorithm (task 2.9: determining S_j(B_j))",
+      "language": "Python",
+      "report": "Lab4/Report_Lab4_DES_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "5",
+      "dir": "Lab5",
+      "topic": "Public-key cryptography — RSA, ElGamal and Diffie-Hellman with an AES-256 session key",
+      "language": "Python",
+      "report": "Lab5/Report_Lab5_CheiePublica_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "6",
+      "dir": "Lab6",
+      "topic": "Hash functions and digital signatures — RSA/NTLM and ElGamal/Whirlpool",
+      "language": "Python",
+      "report": "Lab6/Report_Lab6_Hash_Semnaturi_Dinu_Plesu.docx",
+      "verified": true,
+      "presented": false
+    },
+    {
+      "id": "5.2",
+      "dir": "Lab5.2",
+      "topic": "Addendum to Laboratory 5 — PKI with OpenSSL and digital signatures",
+      "language": "Bash / OpenSSL",
+      "report": "Lab5.2/REPORT.md",
+      "verified": true,
+      "presented": false
+    }
+  ]
+}
