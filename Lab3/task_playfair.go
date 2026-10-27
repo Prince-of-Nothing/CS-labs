@@ -16,7 +16,9 @@ import (
 //
 // Rules implemented (section 3.2.3):
 //   - plaintext prepared uppercase, without spaces/punctuation, in digraphs;
-//   - J is replaced by I (here also for the key/matrix, standard Playfair);
+//     J is a real letter of the Romanian alphabet and the 6x6 grid has room
+//     for all 31 letters, so (unlike classic 5x5 Playfair) J is NOT folded
+//     onto I;
 //   - a filler letter X is inserted between equal letters of the same pair
 //     (X may only appear alone at the very end, where it is padded to XX);
 //   - if the number of letters is odd, a final X is added;
@@ -40,9 +42,10 @@ type playfairMatrix struct {
 }
 
 // buildPlayfairMatrix validates the keyword (>= 7 Romanian letters), removes
-// repeated letters (keeping the first occurrence), replaces J by I and fills
-// the 6x6 grid row by row: keyword letters, then the rest of the alphabet in
-// Table-2 order, then the digits 0..4 in the remaining cells.
+// repeated letters (keeping the first occurrence) and fills the 6x6 grid row
+// by row: keyword letters, then the rest of the alphabet in Table-2 order,
+// then the digits 0..4 in the remaining cells. All 31 letters are kept (J is
+// not folded onto I), so the grid is exactly 31 letters + 5 digits = 36 cells.
 func buildPlayfairMatrix(keyword string) (*playfairMatrix, bool, string) {
 	upper, ok, msg := validateRomanianText(keyword)
 	if !ok {
@@ -57,9 +60,6 @@ func buildPlayfairMatrix(keyword string) (*playfairMatrix, bool, string) {
 	used := map[rune]bool{}
 	var seq []rune
 	add := func(r rune) {
-		if r == 'J' {
-			r = 'I' // J is mapped onto I everywhere
-		}
 		if !used[r] {
 			used[r] = true
 			seq = append(seq, r)
@@ -97,14 +97,13 @@ func (m *playfairMatrix) print() {
 }
 
 // preparePlayfairText converts the message into the list of digraphs ready
-// for encryption: uppercase, no spaces, J->I, X inserted between doubles,
-// final X added when the count is odd.
+// for encryption: uppercase, no spaces, X inserted between doubles,
+// final X added when the count is odd. J is kept as its own letter (the
+// Romanian alphabet has 31 letters and the 6x6 grid has room for all of
+// them), so no J->I folding is applied here either.
 func preparePlayfairText(text []rune) []rune {
 	var out []rune
 	for _, r := range text {
-		if r == 'J' {
-			r = 'I'
-		}
 		out = append(out, r)
 	}
 	prepared := make([]rune, 0, len(out)+1)

@@ -384,11 +384,22 @@ def build_lab3():
     U.para(doc, "The program prints the normalized text, the processed keyword, "
                 "the key codes k\u1d62, the formula used and the resulting "
                 "ciphertext or plaintext, so every step can be checked by hand.")
+    U.para(doc, "The same program also implements task 3.1, the Playfair cipher "
+                "over the same 31-letter alphabet (file task_playfair.go). "
+                "Because 31 letters do not fit a classic 5\u00d75 Playfair grid, the "
+                "handout allows another shape; a 6\u00d76 matrix is used, holding all "
+                "31 letters (J is kept as its own letter rather than folded onto "
+                "I) plus the digits 0\u20134 as fillers, for exactly 36 cells. The "
+                "message is split into digraphs, a filler X is inserted between "
+                "doubled letters and at an odd tail, and the rectangle / row / "
+                "column rules of Playfair are applied. This task is a bonus \u2014 "
+                "the assigned variant for this student is 3.2 \u2014 but it is fully "
+                "implemented and verified in Fig. 4.")
 
     U.heading(doc, "4. Results of the work")
     lab3 = read(os.path.join(CAP, "lab3.txt"))
     p = shot_excerpt("lab3_1.png", lab3, start="=== Sarcina 3.2",
-                     end="Criptograma: \u02baEUPGWGHO\u0218INNSJT\u0102SGRIDHMFDCMEODAERICC\u0102RGINJO",
+                     end="Criptograma: \u021aEUPGWGHO\u0218INNSJT\u0102SGRIDHMFDCMEODAERICC\u0102RGINJO",
                      title="lab3 \u2014 Vigen\u00e8re encryption (k\u2082 = ROMANIA)")
     U.add_image(doc, p); U.caption(doc, "Fig. 1. Task 3.2 \u2014 encryption with the keyword "
                                         "ROMANIA; key codes [20 17 15 0 16 10 0] and c\u1d62 = "
@@ -402,13 +413,22 @@ def build_lab3():
                      end="Caracter invalid: '1'.", title="lab3 \u2014 keyword validation")
     U.add_image(doc, p); U.caption(doc, "Fig. 3. Validation \u2014 a keyword shorter than 7 "
                                         "letters and a keyword containing digits are rejected.")
-    U.para(doc, "The three runs confirm both correctness and usability: Fig. 1 "
+    p = shot_excerpt("lab3_4.png", lab3, start="=== Sarcina 3.1",
+                     end="CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA",
+                     title="lab3 \u2014 Playfair (task 3.1, 6\u00d76 matrix) round trip")
+    U.add_image(doc, p); U.caption(doc, "Fig. 4. Task 3.1 (bonus) \u2014 the Playfair cipher over "
+                                        "the same alphabet in a 6\u00d76 matrix: the 31 letters "
+                                        "plus the filler digits fill all 36 cells, and "
+                                        "decryption restores the original message.")
+    U.para(doc, "The runs confirm both correctness and usability: Fig. 1 "
                 "prints the processed keyword and its key codes "
                 "[20 17 15 0 16 10 0] so that the shift applied at every "
                 "position is transparent and hand-checkable, Fig. 2 proves the "
-                "round trip is lossless, and Fig. 3 shows the validation rules "
+                "round trip is lossless, Fig. 3 shows the validation rules "
                 "rejecting a short keyword and a keyword containing digits, "
-                "each with an explicit message.")
+                "each with an explicit message, and Fig. 4 shows the bonus "
+                "Playfair implementation (task 3.1) round-tripping a message "
+                "through its 6\u00d76 matrix.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "The Vigen\u00e8re cipher over the Romanian alphabet was implemented "
@@ -420,7 +440,9 @@ def build_lab3():
                 "frequency profile flattens \u2014 so a plain frequency attack no "
                 "longer works directly. However the cipher is breakable once the "
                 "key period is found (Kasiski / index of coincidence), which "
-                "motivates the one-time pad and modern stream ciphers.")
+                "motivates the one-time pad and modern stream ciphers. As a "
+                "bonus, task 3.1 (Playfair over a 6\u00d76 matrix) was also "
+                "implemented and verified in the same program.")
 
     U.references(doc, [
         "Lucrare de laborator nr. 3 \u2014 Cifruri polialfabetice. UTM, FCIM \u2014 handout "
