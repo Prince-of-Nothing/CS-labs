@@ -133,6 +133,15 @@ def build_lab1():
                      title="caesar \u2014 Task 1.2 (keyword ROMANIA, k = 3)")
     U.add_image(doc, p); U.caption(doc, "Fig. 3. Task 1.2 \u2014 permuted alphabet built "
                                         "from the keyword ROMANIA, encryption and decryption.")
+    U.para(doc, "Together the three runs verify the specification end to end: "
+                "Fig. 1 shows that encryption and decryption are exact inverses "
+                "over the 31-letter alphabet; Fig. 2 confirms that the input "
+                "constraints (key in 1\u201330, only Romanian letters and spaces) are "
+                "enforced with explicit, re-prompting messages instead of "
+                "crashing; and Fig. 3 demonstrates the two-key construction, "
+                "printing the keyword-derived permuted alphabet "
+                "\u201cR O M A N I \u0102 \u00c2 B C \u2026\u201d so that the mapping can be "
+                "checked by hand against the ciphertext.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "Both ciphers were implemented and validated. The classical "
@@ -205,15 +214,30 @@ def build_lab2():
     U.para(doc, "A substitution that approaches the true key drives \u03c7\u00b2 "
                 "down sharply and turns the masked word list (unknown letters "
                 "shown as \u201c*\u201d) into recognisable words.")
+    U.para(doc, "Nothing in the attack inherently requires a computer: it is a "
+                "manual, human-driven procedure that can be carried out on paper "
+                "from the frequency tables of the handout, or with any online "
+                "frequency-analysis tool. A program only automates the "
+                "bookkeeping \u2014 counting letters, ranking them and keeping the "
+                "candidate substitution consistent \u2014 while every actual letter "
+                "correspondence is still chosen by the analyst from the "
+                "linguistic evidence.")
 
     U.heading(doc, "3. Implementation")
-    U.para(doc, "The attack was carried out with the tool lab2 (Go, file "
-                "freq.go). Option 2 asks for the language profile, prints the "
+    U.para(doc, "For reproducibility the attack was run with a small local "
+                "tool, lab2 (Go, file freq.go) \u2014 the same manual procedure, "
+                "with the arithmetic automated. The result is equally achievable "
+                "by hand or with an online frequency-analysis website; the "
+                "program was preferred only because it recomputes the frequency "
+                "table and \u03c7\u00b2 after every correspondence, keeps the substitution "
+                "a bijection, and makes the whole attack repeatable from the "
+                "repository. Option 2 asks for the language profile, prints the "
                 "ranked frequency table of the ciphertext, applies the automatic "
                 "frequency mapping, and enters an interactive loop with the "
                 "commands <CIFRATA>=<CLARA> (assign a correspondence), del, tab "
-                "(frequency table), text (current decryption) and gata (finish). "
-                "Key fragments:")
+                "(frequency table), text (current decryption) and gata (finish) "
+                "\u2014 the analyst, not the program, decides each mapping. Key "
+                "fragments:")
     U.code_block(doc, [
         "// Automatic mapping: rank cipher letters by frequency and match them",
         "// to the most frequent letters of the language profile.",
@@ -262,6 +286,14 @@ def build_lab2():
                 "Washington Naval Conference; the complete text (618 words) was "
                 "saved to Lab2/v20_plain.txt and is reused as the signed message "
                 "in Laboratory Work No. 6.")
+    U.para(doc, "Read together, the four figures trace the full attack: Fig. 2 "
+                "establishes the mechanical starting point \u2014 the ranked cipher "
+                "frequencies matched to English, with \u03c7\u00b2 = 47.8 for the pure "
+                "most-frequent \u2192 most-frequent guess; Fig. 3 shows a single "
+                "linguistic correction (G=N) and the partial text it immediately "
+                "unlocks; and Fig. 4 is the end state, a coherent plaintext. The "
+                "13 corrections between Fig. 2 and Fig. 4 are the analyst's "
+                "reasoning, not the program's.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "The monoalphabetic substitution cipher was fully broken without "
@@ -271,10 +303,11 @@ def build_lab2():
                 "This confirms that monoalphabetic ciphers, whatever their key "
                 "space, are insecure against a statistically grounded "
                 "cryptanalytic attack \u2014 the classical frequency analysis known "
-                "since Al-Kindi. The work also illustrates the practical "
-                "importance of interactive tools: the analyst sees the text and "
-                "\u03c7\u00b2 improve with every correspondence and can steer the attack "
-                "using linguistic intuition.")
+                "since Al-Kindi. The attack is fundamentally interactive and "
+                "linguistic: the analyst reads the text, recognises word shapes "
+                "and steers each correspondence, while \u03c7\u00b2 merely measures how "
+                "close the candidate already is \u2014 the software, whether a local "
+                "script or an online tool, is only the workbench.")
 
     U.references(doc, [
         "Lucrare de laborator nr. 2 \u2014 Criptanaliza cifrurilor monoalfabetice. "
@@ -369,6 +402,13 @@ def build_lab3():
                      end="Caracter invalid: '1'.", title="lab3 \u2014 keyword validation")
     U.add_image(doc, p); U.caption(doc, "Fig. 3. Validation \u2014 a keyword shorter than 7 "
                                         "letters and a keyword containing digits are rejected.")
+    U.para(doc, "The three runs confirm both correctness and usability: Fig. 1 "
+                "prints the processed keyword and its key codes "
+                "[20 17 15 0 16 10 0] so that the shift applied at every "
+                "position is transparent and hand-checkable, Fig. 2 proves the "
+                "round trip is lossless, and Fig. 3 shows the validation rules "
+                "rejecting a short keyword and a keyword containing digits, "
+                "each with an explicit message.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "The Vigen\u00e8re cipher over the Romanian alphabet was implemented "
@@ -486,6 +526,14 @@ def build_lab4():
                                         "K\u2085 \u2295 E(R\u2084) = 0xC60503EB51A2, the block "
                                         "B\u2083 = 010100 gives r = 0, c = 10, so "
                                         "S\u2083(B\u2083) = S\u2083[0][10] = 12 = 1100\u2082 (binar).")
+    U.para(doc, "The evidence forms a closed, reproducible loop: Fig. 1 anchors "
+                "the whole implementation to the published FIPS-81 vector "
+                "(133457799BBCDFF1 / 0123456789ABCDEF \u2192 85E813540F0AB405), "
+                "Fig. 2 and Fig. 3 expose the internal state \u2014 all sixteen "
+                "subkeys and a fully traced round \u2014 that a reviewer can "
+                "recompute by hand, and Fig. 4 isolates the single S-box lookup "
+                "required by Task 2.9, reducing K\u2085 \u2295 E(R\u2084) = 0xC60503EB51A2 "
+                "to the cell S\u2083[0][10] = 12 = 1100\u2082.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "Task 2.9 was solved and cross-checked: the 48-bit value is "
@@ -561,10 +609,17 @@ def build_lab5():
                 "block with AES in ECB mode.")
 
     U.heading(doc, "3. Implementation")
-    U.para(doc, "All computations were reproduced with Python arbitrary-precision "
-                "integers (file main.py), which implement the same primitives as "
-                "Wolfram's PowerMod, ModInverse and RandomPrime; the AES layer is "
-                "in verify_dh_aes.py. The essential steps:")
+    U.para(doc, "The handout suggests wolframalpha.com or Wolfram Mathematica. "
+                "The free Wolfram Alpha interface cannot be scripted and is "
+                "impractical at these sizes \u2014 it must generate 1024-bit primes "
+                "and reduce 2048-bit moduli interactively \u2014 so the identical "
+                "computations were reproduced in Python (file main.py) with "
+                "arbitrary-precision integers. Python's built-in "
+                "pow(base, exp, mod) is exactly Wolfram's PowerMod and "
+                "pow(e, -1, \u03d5) is ModInverse, so the same three primitives "
+                "(prime generation, modular exponentiation, modular inverse) "
+                "underlie both; the AES layer is in verify_dh_aes.py. The "
+                "essential steps:")
     U.code_block(doc, [
         "p = gen_prime(1024);  q = gen_prime(1024);  n = p*q      # RSA modulus",
         "while n.bit_length() < 2048: q = gen_prime(1024); n = p*q # exact 2048 bits",
@@ -606,6 +661,15 @@ def build_lab5():
                                         "known-answer test passes and the block "
                                         "\u201cDinu Plesu\u201d is encrypted with the derived "
                                         "AES-256 key.")
+    U.para(doc, "Each figure documents a required value, not merely a "
+                "screenshot: Fig. 1 proves the RSA modulus is a full 2048 bits "
+                "and that the round trip and the key relation e\u00b7d \u2261 1 (mod \u03d5) "
+                "hold; Fig. 2 shows ElGamal decryption recovering m over the "
+                "given 2048-bit safe prime; Fig. 3 confirms both parties reach "
+                "the same Diffie-Hellman secret from which SHA-256(K) derives "
+                "the AES-256 key; and Fig. 4 grounds that session key in a "
+                "passing FIPS-197 known-answer test before encrypting the block "
+                "\u201cDinu Plesu\u201d.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "All three public-key tasks were reproduced and verified. RSA "
@@ -661,7 +725,10 @@ def build_lab6():
                 "being fast to compute. NTLM is built on MD4: the message is "
                 "padded, processed in 64-byte blocks with four rounds of "
                 "bitwise logic functions and modular additions, producing a "
-                "128-bit digest. Whirlpool (ISO/IEC 10118-3) is a 512-bit "
+                "128-bit digest. MD4 is cryptographically broken \u2014 practical "
+                "collision attacks exist \u2014 so NTLM is retained here only as the "
+                "assigned legacy hash and must not be used in real systems. "
+                "Whirlpool (ISO/IEC 10118-3) is a 512-bit "
                 "hash based on an AES-like Miyaguchi-Preneel construction with "
                 "a 512-bit block and a 512-bit output.")
     U.para(doc, "A digital signature binds a digest to a signer's private key. "
@@ -723,6 +790,13 @@ def build_lab6():
     U.add_image(doc, p); U.caption(doc, "Fig. 3. Sarcina 3 \u2014 ElGamal signature of "
                                         "H = Whirlpool(m): g^H = y^s\u2081\u00b7s\u2081^s\u2082 "
                                         "(mod p) and the anti-corruption check both hold.")
+    U.para(doc, "The three runs move from component to system: Fig. 1 validates "
+                "the Whirlpool primitive against the published ISO vectors, "
+                "Fig. 2 shows the RSA signature of H = NTLM(m) verifying "
+                "(v = s^e mod n returns H), and Fig. 3 shows the ElGamal "
+                "signature satisfying g^H = y^s\u2081\u00b7s\u2081^s\u2082 (mod p) \u2014 together "
+                "with the anti-corruption check, which confirms that altering "
+                "the digest (H + 1) invalidates the signature.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "Both signatures were generated and validated. The RSA "
