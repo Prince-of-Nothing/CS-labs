@@ -1,0 +1,187 @@
+$ python3 des_lab.py --seed     # meniul 5: test de verificare (vectorul FIPS)
+==============================================================================
+LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES
+Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):
+  In runda i am obtinut K_i XOR E(R_i-1) = ... (48 biti);
+  sa se determine S_j(B_j) pentru un j dat.
+==============================================================================
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: 
+--- Test de verificare ---
+  cheie = 133457799BBCDFF1, text clar = 0123456789ABCDEF
+  text cifrat obtinut = 85E813540F0AB405
+  text cifrat asteptat = 85E813540F0AB405
+  REZULTAT: CORECT - test trecut
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: La revedere!
+
+$ python3 des_lab.py --seed     # meniul 3: programul de chei (PC-1, deplasari, PC-2)
+==============================================================================
+LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES
+Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):
+  In runda i am obtinut K_i XOR E(R_i-1) = ... (48 biti);
+  sa se determine S_j(B_j) pentru un j dat.
+==============================================================================
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea:   Cheia DES (8 octeti hex, ex. 133457799BBCDFF1):   Cheia (64 biti): 133457799BBCDFF1  0001001100110100010101110111100110011011101111001101111111110001
+  Bitii de paritate (8,16,...,64) se elimina prin PC-1.
+  Dupa PC-1 (56 biti): 11110000110011001010101011110101010101100110011110001111
+  C0 = 1111000011001100101010101111   D0 = 0101010101100110011110001111
+  Runda  1: deplasare la stanga 1  C1 = 1110000110011001010101011111  D1 = 1010101011001100111100011110
+            K1 (PC-2, 48 biti) = 000110110000001011101111111111000111000001110010  = 0x1B02EFFC7072
+  Runda  2: deplasare la stanga 1  C2 = 1100001100110010101010111111  D2 = 0101010110011001111000111101
+            K2 (PC-2, 48 biti) = 011110011010111011011001110110111100100111100101  = 0x79AED9DBC9E5
+  Runda  3: deplasare la stanga 2  C3 = 0000110011001010101011111111  D3 = 0101011001100111100011110101
+            K3 (PC-2, 48 biti) = 010101011111110010001010010000101100111110011001  = 0x55FC8A42CF99
+  Runda  4: deplasare la stanga 2  C4 = 0011001100101010101111111100  D4 = 0101100110011110001111010101
+            K4 (PC-2, 48 biti) = 011100101010110111010110110110110011010100011101  = 0x72ADD6DB351D
+  Runda  5: deplasare la stanga 2  C5 = 1100110010101010111111110000  D5 = 0110011001111000111101010101
+            K5 (PC-2, 48 biti) = 011111001110110000000111111010110101001110101000  = 0x7CEC07EB53A8
+  Runda  6: deplasare la stanga 2  C6 = 0011001010101011111111000011  D6 = 1001100111100011110101010101
+            K6 (PC-2, 48 biti) = 011000111010010100111110010100000111101100101111  = 0x63A53E507B2F
+  Runda  7: deplasare la stanga 2  C7 = 1100101010101111111100001100  D7 = 0110011110001111010101010110
+            K7 (PC-2, 48 biti) = 111011001000010010110111111101100001100010111100  = 0xEC84B7F618BC
+  Runda  8: deplasare la stanga 2  C8 = 0010101010111111110000110011  D8 = 1001111000111101010101011001
+            K8 (PC-2, 48 biti) = 111101111000101000111010110000010011101111111011  = 0xF78A3AC13BFB
+  Runda  9: deplasare la stanga 1  C9 = 0101010101111111100001100110  D9 = 0011110001111010101010110011
+            K9 (PC-2, 48 biti) = 111000001101101111101011111011011110011110000001  = 0xE0DBEBEDE781
+  Runda 10: deplasare la stanga 2  C10 = 0101010111111110000110011001  D10 = 1111000111101010101011001100
+            K10 (PC-2, 48 biti) = 101100011111001101000111101110100100011001001111  = 0xB1F347BA464F
+  Runda 11: deplasare la stanga 2  C11 = 0101011111111000011001100101  D11 = 1100011110101010101100110011
+            K11 (PC-2, 48 biti) = 001000010101111111010011110111101101001110000110  = 0x215FD3DED386
+  Runda 12: deplasare la stanga 2  C12 = 0101111111100001100110010101  D12 = 0001111010101010110011001111
+            K12 (PC-2, 48 biti) = 011101010111000111110101100101000110011111101001  = 0x7571F59467E9
+  Runda 13: deplasare la stanga 2  C13 = 0111111110000110011001010101  D13 = 0111101010101011001100111100
+            K13 (PC-2, 48 biti) = 100101111100010111010001111110101011101001000001  = 0x97C5D1FABA41
+  Runda 14: deplasare la stanga 2  C14 = 1111111000011001100101010101  D14 = 1110101010101100110011110001
+            K14 (PC-2, 48 biti) = 010111110100001110110111111100101110011100111010  = 0x5F43B7F2E73A
+  Runda 15: deplasare la stanga 2  C15 = 1111100001100110010101010111  D15 = 1010101010110011001111000111
+            K15 (PC-2, 48 biti) = 101111111001000110001101001111010011111100001010  = 0xBF918D3D3F0A
+  Runda 16: deplasare la stanga 1  C16 = 1111000011001100101010101111  D16 = 0101010101100110011110001111
+            K16 (PC-2, 48 biti) = 110010110011110110001011000011100001011111110101  = 0xCB3D8B0E17F5
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: La revedere!
+
+$ python3 des_lab.py --seed     # meniul 4: criptarea completa a unui bloc (16 runde)
+
+$ python3 des_lab.py --seed     # meniul 1: sarcina 2.9, i=5, j=3
+==============================================================================
+LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES
+Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):
+  In runda i am obtinut K_i XOR E(R_i-1) = ... (48 biti);
+  sa se determine S_j(B_j) pentru un j dat.
+==============================================================================
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: 
+--- SARCINA 2.9 ---
+Valorile pot fi introduse de utilizator sau generate aleator.
+  Numarul rundei i (1-16) [sau "r" aleator]:   K_i XOR E(R_i-1) (48 biti / 12 cifre hex / "r"):   Numarul cutiei-S j (1-8) [sau "r" aleator]: 
+  Runda i = 5; valoarea de 48 de biti, cutia j = 3.
+
+  Pasul 1. Sirul primit (48 biti), impartit in 8 blocuri de 6 biti:
+    B1 B2 B3 B4 B5 B6 B7 B8
+    110001 100000 010100 000011 111010 110101 000110 100010
+    (hexazecimal: 0xC60503EB51A2)
+
+  Pasul 2. Se lucreaza cu B3 = 010100 (6 biti).
+      b1 b6 (bitii de rand)       = 00  -> r = 0
+      b2 b3 b4 b5 (bitii de coloana) = 1010  -> c = 10
+
+  Pasul 3. Cautarea in cutia-S:
+    Tabelul cutiei-S S3 (liniile = bitii b1b6, coloanele = b2b3b4b5):
+           0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
+     r0:   10   0   9  14   6   3  15   5   1  13  12   7  11   4   2   8   <- linia aleasa
+     r1:   13   7   0   9   3   4   6  10   2   8   5  14  12  11  15   1
+     r2:   13   6   4   9   8  15   3   0  11   1   2  12   5  10  14   7
+     r3:    1  10  13   0   6   9   8   7   4  15  14   3  11   5   2  12
+    Selectie: linia 0, coloana 10 -> S3[0][10] = 12 = 1100b
+
+  Pasul 4. Rezultatul: S3(B3) = 12 = 1100 (4 biti)
+
+  Pasul 5 (contextul complet in functia f): toate cele 8 cutii-S:
+      S1(B1) = S1(b1b6=11, b2b3b4b5=1000) = S1[3][8] = 0101  (110001 -> 0101)
+      S2(B2) = S2(b1b6=10, b2b3b4b5=0000) = S2[2][0] = 0000  (100000 -> 0000)
+      S3(B3) = S3(b1b6=00, b2b3b4b5=1010) = S3[0][10] = 1100  (010100 -> 1100)
+      S4(B4) = S4(b1b6=01, b2b3b4b5=0001) = S4[1][1] = 1000  (000011 -> 1000)
+      S5(B5) = S5(b1b6=10, b2b3b4b5=1101) = S5[2][13] = 0011  (111010 -> 0011)
+      S6(B6) = S6(b1b6=11, b2b3b4b5=1010) = S6[3][10] = 0001  (110101 -> 0001)
+      S7(B7) = S7(b1b6=00, b2b3b4b5=0011) = S7[0][3] = 1110  (000110 -> 1110)
+      S8(B8) = S8(b1b6=10, b2b3b4b5=0001) = S8[2][1] = 1011  (100010 -> 1011)
+      S1(B1)S2(B2)...S8(B8) = 01010000110010000011000111101011  (32 biti)
+      dupa permutarea P      = 00101000000100111010110111000011
+      R_i = L_(i-1) XOR P(...)   [vezi sarcina 2.8/2.10]
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: La revedere!
+
+$ python3 des_lab.py --seed     # meniul 2: cutia-S S3
+==============================================================================
+LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES
+Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):
+  In runda i am obtinut K_i XOR E(R_i-1) = ... (48 biti);
+  sa se determine S_j(B_j) pentru un j dat.
+==============================================================================
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea:   Ce cutie afisam (1-8 sau "toate"):     Tabelul cutiei-S S3 (liniile = bitii b1b6, coloanele = b2b3b4b5):
+           0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
+     r0:   10   0   9  14   6   3  15   5   1  13  12   7  11   4   2   8
+     r1:   13   7   0   9   3   4   6  10   2   8   5  14  12  11  15   1
+     r2:   13   6   4   9   8  15   3   0  11   1   2  12   5  10  14   7
+     r3:    1  10  13   0   6   9   8   7   4  15  14   3  11   5   2  12
+
+Optiuni:
+  1 = Sarcina 2.9: determinarea lui S_j(B_j)
+  2 = Afișarea cutiilor-S (tabelele folosite)
+  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
+  4 = Criptarea completa a unui bloc (toate cele 16 runde)
+  5 = Test de verificare (vectorul FIPS)
+  0 = Iesire
+Alegeti optiunea: La revedere!

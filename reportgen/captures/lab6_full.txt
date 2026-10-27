@@ -1,0 +1,57 @@
+==============================================================================
+LUCRAREA DE LABORATOR NR. 6 - FUNCTII HASH SI SEMNATURI DIGITALE
+Numar student (lista grupei): k = 20
+
+Mesajul m = mesajul obtinut la Lucrarea de laborator nr. 2
+(textul clar recuperat prin analiza frecventei, varianta V20):
+A few months before the November opening of the disarmament conference in Washington, daily courier service was set up between the Black Chamber and the State Department. An official grinningly remarked that State's upper echelons were delighted with the cryptanalysts' work and read the solutions every morning with their orange juice and coffee. The conference sought to limit the tonnage of capita ...
+(lungime: 3737 caractere)
+
+==============================================================================
+SARCINA 2 - SEMNATURA RSA, hash = NTLM  [i = (20 mod 24)+1 = 21]
+
+Pasul 1: exponentul public e = 65537 (ales astfel incat gcd(e, phi)=1)
+Pasul 2: se genereaza p si q primi de 1536 biti (Wolfram: RandomPrime)...
+  p = 206539568191340370206699297092602201560606982108523983946834...(463 cifre)
+  q = 203453322926215168785925977939436663512373069314758938990817...(463 cifre)
+  n = p*q  (3072 biti) = 420211614642738109645773878987031899333264269080260998551991...(925 cifre)
+  phi(n) = (p-1)(q-1) = 420211614642738109645773878987031899333264269080260998551991...(925 cifre)
+  d = e^-1 mod phi(n)  (Wolfram: PowerMod[e,-1,phi]) = 113752143909193536524797814778048017548429763305505445401999...(925 cifre)
+  Cheie publica (e, n); cheie secreta (d, n)
+
+Pasul 3: H = NTLM(m)
+  hex: 5c6dee7fd0b29004b9f913d290b6f500
+  zecimal (conform notei): 122859773309843615874484299244475184384
+
+Pasul 4: semnatura s = H^d mod n (PowerMod[H,d,n]):
+  s = 172245197000543605954550037434955313478382734678650030715240...(925 cifre)
+
+Pasul 5: validarea v = s^e mod n:
+  v == H ? True  -> SEMNATURA VALIDA
+  (parametrii completi: Lab6/rsa_params.txt)
+
+==============================================================================
+SARCINA 3 - SEMNATURA ELGAMAL, hash = Whirlpool  [i = (20 mod 24)+1 = 21]
+
+Pasul 1: verificarea parametrilor din enunt (p, g)
+  p are 2048 biti; g = 2; q_ord = (p-1)/2
+Pasul 2: cheia secreta x = 198043877506188527794072487059848266851593356007741225042437...(617 cifre)
+Pasul 3: cheia publica y = g^x mod p = 148414404432397129903445710637377241960015929895617954820205...(617 cifre)
+
+Pasul 4: H = Whirlpool(m)
+  hex: 7523e13df3ef66c6d40414550c31f437d14fa40fbdc49b5a74223d703e4ee78d61dc289f9be6af29ee53080000c2c5cb4c7e5c27b42f5209410daf42b272351a
+  zecimal: 613512776605413609243732110709409896214724275757292922814437...(154 cifre)
+
+Pasul 5: semnarea
+  kA (secret, gcd(kA,p-1)=1) = 958476242617883532713832890680247534154862670603288537486108...(616 cifre)
+  s1 = g^kA mod p                    = 130387988213247630909870141878773032725757570758369773393192...(617 cifre)
+  s2 = kA^-1 * (H - x*s1) mod (p-1)  = 202084318268556256982231181716802638695888997692714081454028...(617 cifre)
+
+Pasul 6: validarea
+  v1 = g^H mod p                = 197815898134508345956529785821402325557922373116235519379282...(617 cifre)
+  v2 = y^s1 * s1^s2 mod p       = 197815898134508345956529785821402325557922373116235519379282...(617 cifre)
+  v1 == v2 ? True  -> SEMNATURA VALIDA
+  control anticoruptie: pentru H' = H+1, g^H' mod p != v2 -> True
+  (parametrii completi: Lab6/elgamal_sig_params.txt)
+
+GATA: ambele semnaturi au fost generate si validate.

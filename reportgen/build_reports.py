@@ -17,7 +17,8 @@ from render import render_terminal, render_excerpt  # noqa: E402
 import utm_doc as U  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CAP = "/tmp/opencode/captures"
+CAP = os.path.join(REPO, "reportgen", "captures")   # tracked: builds must not
+                                                    # depend on /tmp surviving
 IMG = os.path.join(REPO, "reportgen", "img")
 OUT = REPO
 URL = "https://github.com/Prince-of-Nothing/CS-labs.git"

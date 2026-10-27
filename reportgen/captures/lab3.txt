@@ -1,0 +1,115 @@
+$ ./lab3                        # Sarcina 3.2: criptare Vigenere, k2 = ROMANIA
+Lucrarea de laborator nr. 3 - Cifruri polialfabetice
+Sarcina 3.1: Playfair (alfabet romanesc, matrice 6x6)
+Sarcina 3.2: Vigenere (alfabet romanesc, n = 31, coduri 0..30)
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: 
+=== Sarcina 3.2: Cifrul Vigenere peste alfabetul romanesc (n=31) ===
+Optiunea (1 = criptare, 2 = decriptare): Cuvantul-cheie k2 (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Introduceti mesajul (text clar): 
+Text normalizat (majuscule, fara spatii, 44 litere): CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
+Cuvant-cheie prelucrat: ROMANIA (7 litere)
+Deplasarile ki = codurile literelor cheii din Tabelul 2: [20 17 15 0 16 10 0]
+Formula: ci = (mi + ki) mod 31
+ȚEUPGWGHOȘINNSJTĂSGRIDHMFDCMEODAERICCĂRGINJO
+
+Criptograma: ȚEUPGWGHOȘINNSJTĂSGRIDHMFDCMEODAERICCĂRGINJO
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: La revedere!
+
+$ ./lab3                        # Sarcina 3.2: decriptarea criptogramei (rotunjire exacta)
+Lucrarea de laborator nr. 3 - Cifruri polialfabetice
+Sarcina 3.1: Playfair (alfabet romanesc, matrice 6x6)
+Sarcina 3.2: Vigenere (alfabet romanesc, n = 31, coduri 0..30)
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: 
+=== Sarcina 3.2: Cifrul Vigenere peste alfabetul romanesc (n=31) ===
+Optiunea (1 = criptare, 2 = decriptare): Cuvantul-cheie k2 (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Introduceti criptograma: 
+Text normalizat (majuscule, fara spatii, 44 litere): ȚEUPGWGHOȘINNSJTĂSGRIDHMFDCMEODAERICCĂRGINJO
+Cuvant-cheie prelucrat: ROMANIA (7 litere)
+Deplasarile ki = codurile literelor cheii din Tabelul 2: [20 17 15 0 16 10 0]
+Formula: mi = (ci - ki + 31) mod 31
+CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
+
+Mesajul decriptat: CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: La revedere!
+
+$ ./lab3                        # verificarea validarilor (cheie prea scurta / caractere invalide)
+Lucrarea de laborator nr. 3 - Cifruri polialfabetice
+Sarcina 3.1: Playfair (alfabet romanesc, matrice 6x6)
+Sarcina 3.2: Vigenere (alfabet romanesc, n = 31, coduri 0..30)
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: 
+=== Sarcina 3.2: Cifrul Vigenere peste alfabetul romanesc (n=31) ===
+Optiunea (1 = criptare, 2 = decriptare): Cuvantul-cheie k2 (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Cheie invalida: Cuvântul-cheie este prea scurt: are 2 litere, dar lungimea minimă este 7 caractere.
+Cuvantul-cheie k2 (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Cheie invalida: Caracter invalid: '1'. Sunt permise doar literele alfabetului românesc: A–Z, a–z, Ă/ă, Â/â, Î/î, Ș/ş/Ş, Ț/ţ/Ţ (și spații, care se elimină).
+
+$ ./lab3                        # Sarcina 3.1: Playfair (optiunea 1) - criptare + decriptare, k = ROMANIA
+Lucrarea de laborator nr. 3 - Cifruri polialfabetice
+Sarcina 3.1: Playfair (alfabet romanesc, matrice 6x6)
+Sarcina 3.2: Vigenere (alfabet romanesc, n = 31, coduri 0..30)
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: 
+=== Sarcina 3.1: Cifrul Playfair peste alfabetul romanesc (matrice 6x6) ===
+Optiunea (1 = criptare, 2 = decriptare): Cheia k (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Matricea de criptare 6x6:
+  R O M A N I 
+  Ă Â B C D E 
+  F G H Î J K 
+  L P Q S Ș T 
+  Ț U V W X Y 
+  Z 0 1 2 3 4 
+Introduceti mesajul (text clar): 
+Perechi pregatite pentru criptare (44 litere): CR IP TO GR AF IA ES TE OS TI IN TA FR UM OA SA SI IM PO RT AN TA
+ĂAOTPIFORÎRNCTYKAPYERISILĂVOMNWCTARAUÂILNISI
+
+Criptograma: ĂAOTPIFORÎRNCTYKAPYERISILĂVOMNWCTARAUÂILNISI
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: 
+=== Sarcina 3.1: Cifrul Playfair peste alfabetul romanesc (matrice 6x6) ===
+Optiunea (1 = criptare, 2 = decriptare): Cheia k (minim 7 litere romanesti, A-Z/a-z, Ă Â Î Ș Ț): Matricea de criptare 6x6:
+  R O M A N I 
+  Ă Â B C D E 
+  F G H Î J K 
+  L P Q S Ș T 
+  Ț U V W X Y 
+  Z 0 1 2 3 4 
+Introduceti criptograma: 
+Perechi din criptograma: ĂA OT PI FO RÎ RN CT YK AP YE RI SI LĂ VO MN WC TA RA UÂ IL NI SI
+CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
+
+Mesaj decriptat (spațiile dintre cuvinte se restaulesază manual):
+CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
+
+Optiuni:
+  1 = Sarcina 3.1: Cifrul Playfair
+  2 = Sarcina 3.2: Cifrul Vigenere
+  0 = Iesire
+Alegeti optiunea: La revedere!
