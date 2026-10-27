@@ -198,8 +198,7 @@ def title_page(doc, lab_no, topic, group="FAF-241"):
     line("Laboratory Work No. %d" % lab_no, 14, False, space=4)
     line("Topic: %s" % topic, 12, False, space=20)
 
-    line("Checked by:", 12, False, space=2)
-    line("Maia Zaica, supervisor", 12, False, space=2)
+    line("Checked by: Maia Zaica", 12, False, space=2)
 
     # Footer of the title page only (as in the reference report): the place
     # and year are centred at the bottom of page 1, and the PAGE field is
