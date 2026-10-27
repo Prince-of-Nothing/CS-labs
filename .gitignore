@@ -5,11 +5,8 @@ __pycache__/
 
 # compiled binaries (rebuild with `go build`)
 Lab1/caesar
-Lab2/lab2
-Lab3/lab3
-
-# build artifacts
 Lab1/lab1
+Lab2/lab2
 Lab2/freq
 Lab3/lab3
 *.exe
