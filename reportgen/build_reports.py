@@ -198,7 +198,7 @@ def build_lab2():
                 "re-examined. The quality of a candidate substitution can be "
                 "measured with the chi-square statistic:")
     U.code_block(doc, [
-        "    \u03c7\u00b2 = \u03a3\u2091 (O\u1d62 \u2212 E\u1d62)\u00b2 / E\u1d62,",
+        "    \u03c7\u00b2 = \u03a3\u1d62 (O\u1d62 \u2212 E\u1d62)\u00b2 / E\u1d62   (sum over all letters i)",
         "    O\u1d62 = observed count of the i-th plain letter,",
         "    E\u1d62 = expected count from the language frequency profile.",
     ])
@@ -312,8 +312,8 @@ def build_lab3():
                 "substitution it applies a sequence of Caesar shifts, cycling "
                 "through a keyword. Each letter of the keyword supplies its own "
                 "shift, taken from the alphabet encoding table. For an alphabet "
-                "of n letters and a keyword K = k\u2081k\u2082\u2026k\u2442 (with "
-                "codes k\u1d62), the i-th plaintext letter m\u1d62 is encrypted as")
+                "of n letters and a keyword K = k\u2081k\u2082\u2026k\u2113 of length "
+                "\u2113 (with codes k\u1d62), the i-th plaintext letter m\u1d62 is encrypted as")
     U.code_block(doc, [
         "    c\u1d62 = (m\u1d62 + k\u1d62) mod n       with k\u1d62 = code(K[i mod \u2113])",
         "    m\u1d62 = (c\u1d62 \u2212 k\u1d62 + n) mod n",
@@ -407,7 +407,7 @@ def build_lab4():
     U.heading(doc, "1. Task")
     U.para(doc, "The task number is nr_sarcina = k mod 11 = 20 mod 11 = 9. "
                 "Task 2.9: in round i one obtains the 48-bit value "
-                "K\u1d62 \u2295 E(R\u208b\u2081); for a given box index j "
+                "K\u1d62 \u2295 E(R\u1d62\u208b\u2081); for a given box index j "
                 "(1\u20138) determine the 4-bit output S\u2c7c(B\u2c7c) of the "
                 "j-th S-box, showing all intermediate steps. In addition, the "
                 "whole DES algorithm (key schedule, the 16 Feistel rounds, the "
@@ -421,11 +421,11 @@ def build_lab4():
                 "rounds that split the block into (L\u1d62\u208b\u2081, "
                 "R\u1d62\u208b\u2081):")
     U.code_block(doc, [
-        "    L\u1d62 = R\u208b\u2081 ,   R\u1d62 = L\u1d62\u208b\u2081 \u2295 f(R\u208b\u2081, K\u1d62)",
+        "    L\u1d62 = R\u1d62\u208b\u2081 ,   R\u1d62 = L\u1d62\u208b\u2081 \u2295 f(R\u1d62\u208b\u2081, K\u1d62)",
         "    f(R, K) = P( S\u2081(B\u2081) \u2026 S\u2088(B\u2088) ),  where B\u2081\u2026B\u2088 are the",
         "    eight 6-bit blocks of  K \u2295 E(R)  (E expands R from 32 to 48 bits).",
     ])
-    U.para(doc, "Each S-box maps 6 bits to 4 bits. The outer bits b\u2081b\u2088 "
+    U.para(doc, "Each S-box maps 6 bits to 4 bits. The outer bits b\u2081b\u2086 "
                 "select one of the four rows and the inner bits "
                 "b\u2082b\u2083b\u2084b\u2085 select one of the sixteen columns; "
                 "the value at that position, written in binary, is the 4-bit "
@@ -438,7 +438,7 @@ def build_lab4():
                 "splits it into C\u2080/D\u2080, left-shifts each half by 1 or 2 "
                 "positions per round (the SHIFTS table), and compresses the "
                 "result to 48 bits with PC-2 to produce the round subkeys "
-                "K\u2081\u2026K\u208b\u208b.")
+                "K\u2081\u2026K\u2081\u2086.")
 
     U.heading(doc, "3. Implementation")
     U.para(doc, "DES was implemented from scratch in Python (file des_lab.py). "
@@ -466,34 +466,34 @@ def build_lab4():
     U.add_image(doc, p); U.caption(doc, "Fig. 1. Self-test against the FIPS known-answer "
                                         "vector: key 133457799BBCDFF1, plaintext "
                                         "0123456789ABCDEF \u2192 ciphertext 85E813540F0AB405.")
-    p = shot_excerpt("lab4_2.png", lab4, start="meniul 3: programul de chei",
-                     end="K16 (PC-2, 48 biti)", max_lines=46,
+    p = shot_excerpt("lab4_2.png", lab4, start="Dupa PC-1 (56 biti)",
+                     end="K16 (PC-2, 48 biti)", max_lines=44,
                      title="des_lab \u2014 key schedule (PC-1, shifts, PC-2)")
     U.add_image(doc, p); U.caption(doc, "Fig. 2. Key schedule \u2014 PC-1, the C\u2080/D\u2080 "
                                         "halves, the per-round left shifts and the 16 "
-                                        "subkeys K\u2081\u2026K\u208b\u208b.")
+                                        "subkeys K\u2081\u2026K\u2081\u2086.")
     p = shot_excerpt("lab4_3.png", lab4, start="meniul 4: criptarea completa",
                      end="Blocul criptat (hex)", max_lines=44,
                      title="des_lab \u2014 full 16-round encryption")
-    U.add_image(doc, p); U.caption(doc, "Fig. 3. Full encryption of a block \u2014 one round "
-                                        "shows E(R\u1d62), K\u2081\u208b\u2295E(R\u1d62), the S-box "
+    U.add_image(doc, p); U.caption(doc, "Fig. 3. Full encryption of a block \u2014 each round "
+                                        "shows E(R\u1d62\u208b\u2081), K\u1d62 \u2295 E(R\u1d62\u208b\u2081), the S-box "
                                         "outputs and the new (L, R); the final ciphertext "
                                         "matches the FIPS vector.")
     p = shot_excerpt("lab4_4.png", lab4, start="meniul 1: sarcina 2.9",
                      end="dupa permutarea P", max_lines=44,
                      title="des_lab \u2014 task 2.9 (i = 5, j = 3)")
     U.add_image(doc, p); U.caption(doc, "Fig. 4. Task 2.9 \u2014 given "
-                                        "K\u2085\u2295E(R\u2084) = 0xC60503EB51A2, the block "
+                                        "K\u2085 \u2295 E(R\u2084) = 0xC60503EB51A2, the block "
                                         "B\u2083 = 010100 gives r = 0, c = 10, so "
-                                        "S\u2083(B\u2083) = S\u2083[0][10] = 12 = 1100\u2098.")
+                                        "S\u2083(B\u2083) = S\u2083[0][10] = 12 = 1100\u2082 (binar).")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "Task 2.9 was solved and cross-checked: the 48-bit value is "
                 "split into eight 6-bit blocks, the outer bits select the row "
                 "and the inner bits the column, and the S-box entry is the "
-                "4-bit output \u2014 here S\u2083(B\u2083) = 1100\u2098. Implementing "
+                "4-bit output \u2014 here S\u2083(B\u2083) = 1100\u2082 (binar). Implementing "
                 "the entire DES algorithm (not only the isolated lookup) was "
-                "necessary to obtain a genuine K\u1d62\u2295E(R\u208b\u2081) value "
+                "necessary to obtain a genuine K\u1d62 \u2295 E(R\u1d62\u208b\u2081) value "
                 "and to confirm the result inside the real f function; the FIPS "
                 "known-answer test validates the complete implementation. The "
                 "work makes clear why the S-boxes are the core of DES: they are "
@@ -543,19 +543,20 @@ def build_lab5():
                 "\u03d5(N)) = 1 and computes d = e\u207b\u00b9 mod \u03d5(N). "
                 "Encryption and decryption are")
     U.code_block(doc, [
-        "    c = m\u1da0 mod N        encryption (public key (e, N))",
-        "    m = c\u1da4 mod N        decryption (private key (d, N))",
-        "    because c\u1da4 = m\u2071\u1da4 = m\u207b\u00b9 mod \u03d5(N) = m",
+        "    c = m^e mod N        encryption (public key (e, N))",
+        "    m = c^d mod N        decryption (private key (d, N))",
+        "    because c^d = (m^e)^d = m^(e*d) = m^1 (mod N) = m,",
+        "    since e*d = 1 (mod phi(N)) and m^phi(N) = 1 (mod N).",
     ])
     U.para(doc, "ElGamal over a safe prime p = 2q + 1 with generator g uses a "
-                "secret x, the public key y = g\u02e3 mod p, and encrypts m with "
-                "a fresh random k as (c\u2081, c\u2082) = (g\u029c mod p, "
-                "m\u00b7y\u029c mod p); decryption is "
-                "m = c\u2082\u00b7(c\u2081\u02e3)\u207b\u00b9 mod p.")
+                "secret x, the public key y = g^x mod p, and encrypts m with "
+                "a fresh random k as (c\u2081, c\u2082) = (g^k mod p, "
+                "m\u00b7y^k mod p); decryption is "
+                "m = c\u2082\u00b7(c\u2081^x)\u207b\u00b9 mod p.")
     U.para(doc, "Diffie-Hellman lets two parties derive a common secret over an "
-                "insecure channel: Alice sends A = g\u02e0 mod p, Bob sends "
-                "B = g\u1d67 mod p, and both compute K = B\u02e0 = A\u1d67 = "
-                "g\u02e0\u1d67 mod p. The shared secret is fed to a KDF "
+                "insecure channel: Alice sends A = g^a mod p, Bob sends "
+                "B = g^b mod p, and both compute K = B^a = A^b = "
+                "g^(a*b) mod p. The shared secret is fed to a KDF "
                 "(SHA-256) to obtain an AES-256 key that encrypts the message "
                 "block with AES in ECB mode.")
 
@@ -665,16 +666,16 @@ def build_lab6():
                 "a 512-bit block and a 512-bit output.")
     U.para(doc, "A digital signature binds a digest to a signer's private key. "
                 "With RSA the signature of a digest H (converted to an integer) "
-                "is s = H\u1da4 mod n and verification recovers "
-                "v = s\u2071 mod n = H; anyone holding the public key (e, n) "
+                "is s = H^d mod n and verification recovers "
+                "v = s^e mod n = H; anyone holding the public key (e, n) "
                 "checks v = H. With ElGamal over a safe prime p with generator "
                 "g and secret key x, signing a digest H chooses a random k with "
                 "gcd(k, p\u22121) = 1 and produces")
     U.code_block(doc, [
-        "    s\u2081 = g\u029c mod p",
+        "    s\u2081 = g^k mod p",
         "    s\u2082 = k\u207b\u00b9 \u00b7 (H \u2212 x\u00b7s\u2081) mod (p\u22121)",
-        "    verification:  g\u02e8  \u225f  y\u02e3\u2081 \u00b7 s\u2081\u02e3\u2082  (mod p)",
-        "    where y = g\u02e3 mod p is the public key.",
+        "    verification:  g^H  =  y^s\u2081 \u00b7 s\u2081^s\u2082  (mod p)",
+        "    where y = g^x mod p is the public key.",
     ])
 
     U.heading(doc, "3. Implementation")
@@ -714,21 +715,21 @@ def build_lab6():
                      end="SEMNATURA VALIDA", max_lines=30,
                      title="main.py \u2014 RSA signature, hash = NTLM")
     U.add_image(doc, p); U.caption(doc, "Fig. 2. Sarcina 2 \u2014 RSA signature of H = NTLM(m) "
-                                        "with a 3072-bit modulus: validation v = s\u2071 mod n "
+                                        "with a 3072-bit modulus: validation v = s^e mod n "
                                         "returns H (signature valid).")
     p = shot_excerpt("lab6_3.png", full, start="SARCINA 3 - SEMNATURA ELGAMAL",
                      end="control anticoruptie", max_lines=32,
                      title="main.py \u2014 ElGamal signature, hash = Whirlpool")
     U.add_image(doc, p); U.caption(doc, "Fig. 3. Sarcina 3 \u2014 ElGamal signature of "
-                                        "H = Whirlpool(m): g\u02e8 = y\u02e3\u2081\u00b7s\u2081\u02e3\u2082 "
+                                        "H = Whirlpool(m): g^H = y^s\u2081\u00b7s\u2081^s\u2082 "
                                         "(mod p) and the anti-corruption check both hold.")
 
     U.heading(doc, "5. Conclusions")
     U.para(doc, "Both signatures were generated and validated. The RSA "
                 "signature of the NTLM digest verifies because "
-                "s\u2071 = (H\u1da4)\u2071 = H\u207b\u00b9 mod \u03d5(n) = H; "
-                "the ElGamal signature satisfies g\u02e8 = "
-                "y\u02e3\u2081\u00b7s\u2081\u02e3\u2082 (mod p), and the "
+                "s^e = (H^d)^e = H^(e\u00b7d) = H mod n; "
+                "the ElGamal signature satisfies g^H = "
+                "y^s\u2081\u00b7s\u2081^s\u2082 (mod p), and the "
                 "anti-corruption check confirms that any change to the digest "
                 "breaks verification. Implementing MD4 from scratch and fixing "
                 "a subtle round-constant bug against the RFC 1320 vectors, and "
