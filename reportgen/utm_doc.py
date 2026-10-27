@@ -8,6 +8,8 @@ Layout follows the documented UTM template requirements:
 """
 from __future__ import annotations
 
+import os
+
 from docx import Document
 from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -145,8 +147,16 @@ def add_image(doc, path, width_cm=16.0):
     p.add_run().add_picture(path, width=Cm(width_cm))
 
 
+_HERE = os.path.dirname(os.path.abspath(__file__))
+UTM_LOGO = os.path.join(_HERE, "img", "utm_logo.jpeg")
+
+
 def title_page(doc, lab_no, topic, group="FAF-241"):
-    def line(text, size=14, bold=False, align="center", space=6, indent=None):
+    """Title page laid out like the reference report in resources/:
+    UTM logo, two-line ministry header, university / faculty / department,
+    the student's name and group in bold, a large 'Report / discipline'
+    block, the laboratory number and topic, and the supervisor block."""
+    def line(text, size=12, bold=False, align="center", space=2):
         p = doc.add_paragraph()
         p.alignment = {
             "center": WD_ALIGN_PARAGRAPH.CENTER,
@@ -159,21 +169,50 @@ def title_page(doc, lab_no, topic, group="FAF-241"):
         _set_run(r, size=size, bold=bold)
         return p
 
-    line("TECHNICAL UNIVERSITY OF MOLDOVA", 14, True, space=2)
-    line("Faculty of Computers, Informatics and Microelectronics", 13, False, space=2)
-    line("Department of Computer Science and Information Technologies", 12, False, space=18)
+    # UTM logo, centred at the very top (same size as the reference)
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.first_line_indent = Cm(0)
+    p.paragraph_format.space_after = Pt(8)
+    p.add_run().add_picture(UTM_LOGO, width=Cm(3.3))
 
-    line("LABORATORY WORK No. %d" % lab_no, 15, True, space=6)
-    line("at the discipline: \u201cCryptography and Security\u201d", 13, False, space=6)
-    line("Topic: %s" % topic, 12, False, space=24)
+    line("MINISTRY OF EDUCATION, CULTURE AND RESEARCH", 12, True, space=2)
+    line("OF THE REPUBLIC OF MOLDOVA", 12, True, space=2)
+    line("Technical University of Moldova", 14, True, space=2)
+    line("Faculty of Computers, Informatics and Microelectronics", 12, False, space=2)
+    line("Department of Computer Science and Information Technologies", 12, False, space=2)
 
-    line("Performed by: student Dinu Plesu, group %s" % group, 12, False, space=4,
-         align="left")
-    line("Supervisor: Maia Zaica", 12, False, space=4, align="left")
+    line("%s   %s" % ("Dinu Plesu", group), 12, True, space=6)
 
-    for _ in range(6):
-        line("", 12, space=6)
-    line("Chi\u0219in\u0103u, 2026", 12, False, space=0)
+    # Large two-line block: "Report" (20 pt) over the discipline (14 pt bold)
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.first_line_indent = Cm(0)
+    p.paragraph_format.space_after = Pt(4)
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    r = p.add_run("Report\n\t")
+    _set_run(r, size=20)
+    r = p.add_run("Cryptography and Security")
+    _set_run(r, size=14, bold=True)
+
+    line("Laboratory Work No. %d" % lab_no, 14, False, space=4)
+    line("Topic: %s" % topic, 12, False, space=20)
+
+    line("Checked by:", 12, False, space=2)
+    line("Maia Zaica, supervisor", 12, False, space=2)
+
+    # Footer of the title page only (as in the reference report): the place
+    # and year are centred at the bottom of page 1, and the PAGE field is
+    # suppressed there; numbered pages start from the body of the report.
+    section = doc.sections[0]
+    section.different_first_page_header_footer = True
+    fp = section.first_page_footer
+    p = fp.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.first_line_indent = Cm(0)
+    r = p.add_run("Chi\u0219in\u0103u \u2013 2026")
+    _set_run(r, size=12)
+
     doc.add_page_break()
 
 
