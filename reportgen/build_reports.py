@@ -163,6 +163,7 @@ def build_lab1():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab1", "Report_Lab1_Caesar_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 
@@ -317,6 +318,7 @@ def build_lab2():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab2", "Report_Lab2_Criptanaliza_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 
@@ -453,6 +455,7 @@ def build_lab3():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab3", "Report_Lab3_Vigenere_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 
@@ -578,6 +581,7 @@ def build_lab4():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab4", "Report_Lab4_DES_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 
@@ -716,6 +720,7 @@ def build_lab5():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab5", "Report_Lab5_CheiePublica_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 
@@ -846,6 +851,7 @@ def build_lab6():
     ])
     U.source_code(doc, URL)
     out = os.path.join(OUT, "Lab6", "Report_Lab6_Hash_Semnaturi_Dinu_Plesu.docx")
+    U.insert_toc(doc)
     doc.save(out)
     return out
 

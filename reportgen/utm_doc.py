@@ -12,7 +12,8 @@ import os
 
 from docx import Document
 from docx.enum.section import WD_SECTION
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx.enum.style import WD_STYLE_TYPE
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -56,7 +57,54 @@ def new_document():
     pf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
     pf.space_after = Pt(0)
     pf.space_before = Pt(0)
+
+    # Section titles must carry real Heading styles, otherwise a TOC field
+    # would find no outline level and Word would build an empty index.
+    _style_heading(doc, "Heading 1")
+    _style_heading(doc, "Heading 2")
+    ensure_hyperlink_style(doc)
+    doc._toc_entries = []
     return doc
+
+
+def _style_heading(doc, name):
+    """Reskin Word's built-in heading styles as UTM section titles.
+
+    Without this, applying the style would turn every section title into
+    the default blue Calibri; the reports must stay Times New Roman 12 pt
+    bold and black while still registering as outline level 1/2.
+    """
+    try:
+        st = doc.styles[name]
+    except KeyError:
+        return
+    st.font.name = FONT
+    st.font.size = Pt(12)
+    st.font.bold = True
+    st.font.italic = False
+    st.font.color.rgb = RGBColor(0, 0, 0)
+    hpf = st.paragraph_format
+    hpf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+    hpf.space_before = Pt(10)
+    hpf.space_after = Pt(6)
+    hpf.first_line_indent = Cm(0)
+    hpf.keep_with_next = True
+
+
+def ensure_hyperlink_style(doc):
+    """Make sure the character style 'Hyperlink' exists.
+
+    Word expects w:rStyle w:val="Hyperlink" on hyperlink runs; python-docx's
+    blank template does not define it, so links would lose their formatting.
+    """
+    try:
+        doc.styles["Hyperlink"]
+        return
+    except KeyError:
+        pass
+    st = doc.styles.add_style("Hyperlink", WD_STYLE_TYPE.CHARACTER)
+    st.font.color.rgb = RGBColor(0x06, 0x45, 0xAD)
+    st.font.underline = True
 
 
 def _add_page_field(paragraph):
@@ -103,7 +151,7 @@ def para(doc, text="", size=12, bold=False, italic=False, align="justify",
 
 
 def heading(doc, text, level=1):
-    p = doc.add_paragraph()
+    p = doc.add_paragraph(style="Heading %d" % level)
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT if level > 1 else WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_before = Pt(10)
     p.paragraph_format.space_after = Pt(6)
@@ -111,7 +159,182 @@ def heading(doc, text, level=1):
     p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
     r = p.add_run(text)
     _set_run(r, size=12, bold=True)
+
+    # Bookmark the heading so the TOC entries can link to it, and remember
+    # the entry for insert_toc().
+    entries = getattr(doc, "_toc_entries", None)
+    if entries is None:
+        entries = []
+        doc._toc_entries = entries
+    n = len(entries) + 1
+    # Deliberately not named _Toc*: Word creates and owns that namespace when
+    # it rebuilds the index, and a clash could break the generated links.
+    name = "_Sec%03d" % n
+    start = OxmlElement("w:bookmarkStart")
+    start.set(qn("w:id"), str(n))
+    start.set(qn("w:name"), name)
+    end = OxmlElement("w:bookmarkEnd")
+    end.set(qn("w:id"), str(n))
+    ppr = p._p.pPr
+    p._p.insert(list(p._p).index(ppr) + 1 if ppr is not None else 0, start)
+    p._p.append(end)
+    entries.append({"level": level, "text": text, "name": name})
     return p
+
+
+def _field_start(p):
+    """Begin a complex field: fldChar begin (dirty) + instruction + separate."""
+    r = p.add_run()
+    f = OxmlElement("w:fldChar")
+    f.set(qn("w:fldCharType"), "begin")
+    f.set(qn("w:dirty"), "true")   # Word rebuilds the index on open
+    r._r.append(f)
+    r2 = p.add_run()
+    it = OxmlElement("w:instrText")
+    it.set(qn("xml:space"), "preserve")
+    it.text = ' TOC \\o "1-2" \\h \\z \\u '
+    r2._r.append(it)
+    r3 = p.add_run()
+    sep = OxmlElement("w:fldChar")
+    sep.set(qn("w:fldCharType"), "separate")
+    r3._r.append(sep)
+
+
+def _field_end(p):
+    r = p.add_run()
+    f = OxmlElement("w:fldChar")
+    f.set(qn("w:fldCharType"), "end")
+    r._r.append(f)
+
+
+def _hyperlink(p, text, anchor):
+    """Append an internal (w:anchor) hyperlink run to a paragraph."""
+    link = OxmlElement("w:hyperlink")
+    link.set(qn("w:anchor"), anchor)
+    link.set(qn("w:history"), "1")
+    r = OxmlElement("w:r")
+    rpr = OxmlElement("w:rPr")
+    rs = OxmlElement("w:rStyle")
+    rs.set(qn("w:val"), "Hyperlink")
+    rpr.append(rs)
+    r.append(rpr)
+    t = OxmlElement("w:t")
+    t.set(qn("xml:space"), "preserve")
+    t.text = text
+    r.append(t)
+    link.append(r)
+    p._p.append(link)
+
+
+def external_hyperlink(doc, p, url, font=None, size=None):
+    """Append a clickable external link run to a paragraph.
+
+    font/size keep a URL looking exactly like the styled run it replaces
+    (the template prints the repository address in Consolas).
+    """
+    ensure_hyperlink_style(doc)
+    link = OxmlElement("w:hyperlink")
+    link.set(qn("r:id"), p.part.relate_to(
+        url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/"
+        "relationships/hyperlink",
+        is_external=True))
+    link.set(qn("w:history"), "1")
+    r = OxmlElement("w:r")
+    rpr = OxmlElement("w:rPr")
+    rs = OxmlElement("w:rStyle")
+    rs.set(qn("w:val"), "Hyperlink")
+    rpr.append(rs)
+    if font:
+        rf = OxmlElement("w:rFonts")
+        rf.set(qn("w:ascii"), font)
+        rf.set(qn("w:hAnsi"), font)
+        rpr.append(rf)
+    if size:
+        sz = OxmlElement("w:sz")
+        sz.set(qn("w:val"), str(int(size * 2)))   # half-points
+        rpr.append(sz)
+    r.append(rpr)
+    t = OxmlElement("w:t")
+    t.set(qn("xml:space"), "preserve")
+    t.text = url
+    r.append(t)
+    link.append(r)
+    p._p.append(link)
+
+
+def set_update_fields(doc):
+    """Mark the file so Word refreshes fields (TOC and PAGE) when opened."""
+    settings = doc.settings.element
+    if settings.find(qn("w:updateFields")) is not None:
+        return
+    el = OxmlElement("w:updateFields")
+    el.set(qn("w:val"), "true")
+    compat = settings.find(qn("w:compat"))
+    if compat is not None:
+        compat.addprevious(el)   # keeps ECMA-376 element order
+    else:
+        settings.append(el)
+
+
+def insert_toc(doc, title="Table of Contents"):
+    """Insert a real table of contents in front of the first section title.
+
+    The index is a genuine 'TOC \\o "1-2" \\h \\z \\u' field flagged
+    w:dirty, and the file asks Word for w:updateFields, so page numbers are
+    written by Word itself instead of being hard-coded here (where they would
+    silently go stale). The cached entries carry only the linked section
+    titles, so the index is readable and clickable even before Word refreshes
+    it - the numbers a PDF renderer shows next to them are page footers.
+    """
+    entries = list(getattr(doc, "_toc_entries", []))
+    target = next((p for p in doc.paragraphs
+                   if p.style is not None
+                   and p.style.name in ("Heading 1", "Heading 2")), None)
+    if not entries or target is None:
+        return None
+
+    # Title paragraph: deliberately NOT a heading, so the index cannot list
+    # itself.
+    tp = doc.add_paragraph()
+    tp.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    tp.paragraph_format.first_line_indent = Cm(0)
+    tp.paragraph_format.space_before = Pt(10)
+    tp.paragraph_format.space_after = Pt(6)
+    tp.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+    tp.paragraph_format.keep_with_next = True
+    tr = tp.add_run(title)
+    _set_run(tr, size=14, bold=True)
+
+    paras = [tp]
+    for i, e in enumerate(entries):
+        p = doc.add_paragraph()
+        epf = p.paragraph_format
+        epf.first_line_indent = Cm(0)
+        epf.left_indent = Cm(0 if e["level"] == 1 else 0.75)
+        epf.space_before = Pt(0)
+        epf.space_after = Pt(2)
+        epf.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+        if i == 0:
+            _field_start(p)
+        _hyperlink(p, e["text"], e["name"])
+        if i == len(entries) - 1:
+            _field_end(p)
+        paras.append(p)
+
+    # The index occupies its own page, as in the reference report: the
+    # break sits outside the field so Word keeps it when rebuilding the
+    # index, and section 1 starts on a fresh page.
+    br = doc.add_paragraph()
+    br.paragraph_format.first_line_indent = Cm(0)
+    br.paragraph_format.space_after = Pt(0)
+    br.add_run().add_break(WD_BREAK.PAGE)
+    paras.append(br)
+
+    for p in paras:                      # stack them in front of section 1
+        target._p.addprevious(p._p)
+    set_update_fields(doc)
+    return tp
 
 
 def code_block(doc, lines, size=10):
@@ -237,5 +460,4 @@ def source_code(doc, url):
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.first_line_indent = Cm(0)
     p.paragraph_format.space_before = Pt(6)
-    r = p.add_run(url)
-    _set_run(r, size=12, name=MONO, color=(0x06, 0x45, 0xAD))
+    external_hyperlink(doc, p, url, font=MONO, size=12)
