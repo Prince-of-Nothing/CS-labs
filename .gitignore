@@ -1,3 +1,9 @@
 Lab1/REPORT.docx
 Lab1/~$REPORT.docx
 *.png
+__pycache__/
+
+# compiled binaries (rebuild with `go build`)
+Lab1/caesar
+Lab2/lab2
+Lab3/lab3

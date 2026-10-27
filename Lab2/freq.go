@@ -309,7 +309,9 @@ func main() {
 		fmt.Println("  3 = Demonstration attack on the English ciphertext (section 2.3)")
 		fmt.Println("  0 = Iesire")
 		fmt.Print("Alegeti optiunea: ")
-		switch strings.TrimSpace(reader.nextLine()) {
+		choice := strings.TrimSpace(reader.nextLine())
+		reader.exitOnEOF()
+		switch choice {
 		case "0":
 			return
 		case "1":
@@ -319,7 +321,20 @@ func main() {
 			fmt.Printf("Textul cifrat (Caesar, k=%d): %s\n", k, ct)
 			fmt.Println("(folositi optiunea 2 pentru a sparge acest text fara a sti cheia)")
 		case "2":
-			runAttack(reader, p)
+			fmt.Println("Profilul limbii pentru analiza frecventei:")
+			fmt.Println("  ro = romanesc (Tabelul 2.1)   en = englez (Tabelul 2.2)")
+			prof := p
+			for {
+				fmt.Print("Alegeti profilul (ro/en): ")
+				choice := strings.ToLower(strings.TrimSpace(reader.nextLine()))
+				reader.exitOnEOF()
+				if choice == "ro" || choice == "en" {
+					prof = profileFor(choice)
+					break
+				}
+				fmt.Println("Profil invalid. Alegeti ro sau en.")
+			}
+			runAttack(reader, prof)
 		case "3":
 			runAttack(reader, profileFor("en"))
 		default:
@@ -378,6 +393,12 @@ func runAttack(reader *scanner, p *langProfile) {
 	for {
 		fmt.Print("\n> ")
 		cmd := strings.TrimSpace(reader.nextLine())
+		reader.exitOnEOF()
+		if !isTerminal(os.Stdin) && cmd != "" {
+			// when the session is piped (e.g. generating a report screenshot)
+			// echo the typed command so the transcript reads like a real session
+			fmt.Println(cmd)
+		}
 		if cmd == "" {
 			continue
 		}
@@ -469,14 +490,39 @@ func wordPatternDemo(words []string, assign map[rune]rune) {
 
 // ---------- small input helpers ----------
 
-type scanner struct{ r *bufio.Reader }
+type scanner struct {
+	r   *bufio.Reader
+	eof bool
+}
 
 func newScanner(f *os.File) *scanner { return &scanner{r: bufio.NewReader(f)} }
 
+// isTerminal reports whether f is attached to a terminal, so the program can
+// decide whether to echo piped commands (for report transcripts).
+func isTerminal(f *os.File) bool {
+	info, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	return info.Mode()&os.ModeCharDevice != 0
+}
+
+// exitOnEOF stops the program gracefully when the input stream is closed
+// (e.g. the end of a piped session), instead of looping forever.
+func (s *scanner) exitOnEOF() {
+	if s.eof {
+		fmt.Println()
+		os.Exit(0)
+	}
+}
+
 func (s *scanner) nextLine() string {
-	line, err := s.r.ReadString('\n')
-	if err != nil && line == "" {
+	if s.eof {
 		return ""
+	}
+	line, err := s.r.ReadString('\n')
+	if err != nil {
+		s.eof = true
 	}
 	return strings.TrimRight(line, "\r\n")
 }
@@ -488,17 +534,20 @@ func (s *scanner) nextLineRequired(prompt string) string {
 		if strings.TrimSpace(line) != "" {
 			return line
 		}
+		s.exitOnEOF()
 		fmt.Println("Textul nu poate fi gol.")
 	}
 }
 
 func readInt(s *scanner, prompt string, min, max int) int {
 	for {
+		fmt.Print(prompt)
 		line := strings.TrimSpace(s.nextLine())
 		v, err := strconv.Atoi(line)
 		if err == nil && v >= min && v <= max {
 			return v
 		}
+		s.exitOnEOF()
 		fmt.Printf("Valoare invalida. Introduceti un intreg intre %d si %d.\n", min, max)
 	}
 }
