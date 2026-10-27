@@ -164,7 +164,7 @@ def title_page(doc, lab_no, topic, group="FAF-241"):
     line("Department of Computer Science and Information Technologies", 12, False, space=18)
 
     line("LABORATORY WORK No. %d" % lab_no, 15, True, space=6)
-    line("at the discipline: \u201cCryptography\u201d", 13, False, space=6)
+    line("at the discipline: \u201cCryptography and Security\u201d", 13, False, space=6)
     line("Topic: %s" % topic, 12, False, space=24)
 
     line("Performed by: student Dinu Plesu, group %s" % group, 12, False, space=4,
