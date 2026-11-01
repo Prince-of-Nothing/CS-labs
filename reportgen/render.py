@@ -10,8 +10,27 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+FONT_CANDIDATES = [
+    os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "consola.ttf"),
+    "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+    "/System/Library/Fonts/Menlo.ttc",
+]
+FONT_BOLD_CANDIDATES = [
+    os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "consolab.ttf"),
+    "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+    "/System/Library/Fonts/Menlo.ttc",
+]
+
+
+def _font(size, bold=False):
+    """Load a monospace font from the first path that exists."""
+    for path in (FONT_BOLD_CANDIDATES if bold else FONT_CANDIDATES):
+        if os.path.exists(path):
+            return ImageFont.truetype(path, size)
+    try:
+        return ImageFont.load_default(size=size)
+    except TypeError:  # older Pillow without the size argument
+        return ImageFont.load_default()
 
 # palette (VS Code "Dark+" flavoured)
 BG = (30, 30, 30)
@@ -47,8 +66,8 @@ def _style(line: str):
 def render_terminal(lines, out_png, max_cols=104, font_size=15,
                     pad=14, line_gap=3, wrap=True, title=None):
     """Render *lines* (a list of strings) into a terminal-looking PNG."""
-    font = ImageFont.truetype(FONT_PATH, font_size)
-    bold = ImageFont.truetype(FONT_BOLD, font_size)
+    font = _font(font_size)
+    bold = _font(font_size, bold=True)
     # width of a single monospace character
     cw = font.getbbox("M")[2] - font.getbbox("M")[0]
     ch = font.getbbox("Mg")[3] - font.getbbox("Mg")[1]
@@ -110,6 +129,10 @@ def render_excerpt(text, out_png, start=None, end=None, max_lines=None, **kw):
             if end in l:
                 lines = lines[: i + 1]
                 break
+    # The saved transcript wraps each run in a shell command line with a
+    # comment that labels the scenario. A report screenshot should show the
+    # program output only, so remove those command lines.
+    lines = [l for l in lines if not l.startswith("$ ")]
     if max_lines is not None and len(lines) > max_lines:
         lines = lines[:max_lines] + ["\u2026 (\u00eencerere trunchiat\u0103 pentru raport)"]
     return render_terminal(lines, out_png, **kw)

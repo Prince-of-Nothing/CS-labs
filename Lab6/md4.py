@@ -3,10 +3,7 @@
 """Implementare MD4 (RFC 1320) in Python pur, folosita pentru hash-ul NTLM.
 
 NTLM(password) = MD4(UTF-16LE(password)).
-Verificata cu vectorii de test din RFC 1320:
-  MD4("")       = 31d6cfe0d16ae931b73c59d7e0c089c0
-  MD4("abc")    = a448017aaf21d8525fc10ae87aa6729d
-  MD4(message digest) = d9130a8164549fe818874806e1c7014b
+Verificata cu toti cei 7 vectori de test din RFC 1320 (vezi __main__).
 """
 
 import struct
@@ -94,6 +91,14 @@ def ntlm_hash(text: str) -> bytes:
 
 if __name__ == "__main__":
     assert md4(b"").hex() == "31d6cfe0d16ae931b73c59d7e0c089c0"
+    assert md4(b"a").hex() == "bde52cb31de33e46245e05fbdbd6fb24"
     assert md4(b"abc").hex() == "a448017aaf21d8525fc10ae87aa6729d"
     assert md4(b"message digest").hex() == "d9130a8164549fe818874806e1c7014b"
-    print("MD4 self-test OK (vectori RFC 1320)")
+    assert md4(b"abcdefghijklmnopqrstuvwxyz").hex() == \
+        "d79e1c308aa5bbcdeea8ed63df412da9"
+    assert md4(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+               b"0123456789").hex() == "043f8582f241db351ce627e153e7f0e4"
+    assert md4(b"1234567890123456789012345678901234567890123456789012345678"
+               b"9012345678901234567890").hex() == \
+        "e33b4ddc9c38f2199c3e7b164fcc0536"
+    print("MD4 self-test OK (7 vectori RFC 1320)")

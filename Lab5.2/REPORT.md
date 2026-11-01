@@ -1,7 +1,8 @@
 # Lucrare de laborator nr. 5.2 — PKI (OpenSSL) și semnătură digitală
 
 **Cadrul didactic / Tema:** Public Key Infrastructure (PKI) and Digital Signature Algorithm
-**Autor:** `<Nume Prenume>` **Grupa:** `<grupa>`
+**Autor:** Dinu Plesu **Grupa:** FAF-241
+**Data:** 13.10.2026
 
 ---
 
@@ -83,11 +84,12 @@ Se calculează hash-ul SHA-256 al fișierului și se criptează cu cheia **priva
 ### 4.4 Validarea (semnătură + lanț + revocare)
 
 ```bash
-openssl dgst -sha256 -verify <(openssl x509 -in cert.pem -pubkey -noout) \
+openssl dgst -sha256 -verify "$UDIR/$USER.pub.pem" \
     -signature "$FILE.sig.bin" "$FILE"
-openssl verify -CAfile "$CA_CERT" -crl_check -CRLfile ca/crl/ca.crl.pem "$UDIR/$USER.cert.pem"
+openssl verify -no_check_time -CAfile "$CA_CERT" -crl_check \
+    -CRLfile ca/crl/ca.crl.pem "$UDIR/$USER.cert.pem"
 ```
-Verificarea are două niveluri: (1) integritatea+autenticitatea conținutului prin ridicarea semnăturii la puterea publică `e` și compararea cu hash-ul recomandat; (2) încrederea în certificatul emitentului — semnătura CA și consultarea CRL pentru revocare.
+Verificarea are două niveluri: (1) integritatea+autenticitatea conținutului prin ridicarea semnăturii la puterea publică `e` și compararea cu hash-ul recomandat; (2) încrederea în certificatul emitentului — semnătura CA și consultarea CRL pentru revocare. `-no_check_time` păstrează reproductibil demo-ul pe snapshot-ul din repository (CRL-ul înregistrat a expirat); într-un PKI live se reînnoiește CRL-ul și flags-ul se elimină.
 
 ### 4.5 Revocarea și CRL
 
@@ -162,4 +164,4 @@ Demonstrează separarea clară între autenticitatea criptografică a semnături
 - Elementul de aport uman în PKI este încrederea în lanțul de certificare: verificatorul trebuie să dețină certificatul rădăcină al CA.
 
 ## 7. Cod sursă
-Repository GitHub: `<link>` (directorul `Lab5.2/`: `pki.sh`, `pki/openssl.cnf`, artefacte generate).
+Repository GitHub: <https://github.com/Prince-of-Nothing/CS-labs.git> (directorul `Lab5.2/`: `pki.sh`, `pki/openssl.cnf`, artefacte generate).

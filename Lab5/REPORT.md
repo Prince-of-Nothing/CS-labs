@@ -4,6 +4,10 @@
 **Grupă:** Grupa ____
 **Data:** ____.10.2026
 
+> **Notă:** acesta este un draft cu mesajul generic „Nume Prenume”; raportul
+> final, cu mesajul „Dinu Plesu” și valorile generate, este
+> `Report_Lab5_CheiePublica_Dinu_Plesu.docx`.
+
 ---
 
 ## 1. Sarcina 1 — Studierea materialelor didactice (ELSE)

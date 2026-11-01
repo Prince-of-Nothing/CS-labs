@@ -1,0 +1,239 @@
+% CS Labs Report --- Laboratory Work No. 1
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage[left=2cm,right=1.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{codebackground}{HTML}{F3F4F6}
+\definecolor{codeframe}{HTML}{D1D5DB}
+\definecolor{commentgreen}{HTML}{3F6212}
+\definecolor{placeholdertext}{HTML}{64748B}
+
+\captionsetup[figure]{name=Fig,labelsep=period,font=small}
+
+\titleformat{\section}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {\thesection}{0.8em}{\MakeUppercase}
+\titleformat{name=\section,numberless}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {}{0pt}{\MakeUppercase}
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{12}{15}\selectfont}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{0pt}{12pt}
+\titlespacing*{\subsection}{0pt}{10pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Cryptography and Security}}
+\fancyhead[R]{\small Laboratory Work No. 1}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+\lstdefinestyle{go}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebackground},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  commentstyle=\color{commentgreen}\itshape,
+  morecomment=[l]{//},
+  xleftmargin=0.4cm,
+  xrightmargin=0.2cm,
+  framexleftmargin=0.2cm,
+  framesep=5pt,
+  aboveskip=8pt,
+  belowskip=8pt,
+  extendedchars=true,
+  literate=
+    {Ă}{\u{A}}1 {Â}{\^{A}}1 {Î}{\^{I}}1
+    {Ș}{\c{S}}1 {Ț}{\c{T}}1 {Ş}{\c{S}}1 {Ţ}{\c{T}}1
+    {ă}{\u{a}}1 {â}{\^{a}}1 {î}{\^{i}}1
+    {ș}{\c{s}}1 {ț}{\c{t}}1 {ş}{\c{s}}1 {ţ}{\c{t}}1
+    {—}{\textemdash}1
+}
+
+\newcommand{\reportfigure}[4][\textwidth]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \IfFileExists{figures/LOGO_UTM.jpg}{%
+      \includegraphics[width=3.4cm]{figures/LOGO_UTM.jpg}\par
+      \vspace{0.25cm}
+    }{}
+
+    {\bfseries\fontsize{14}{17}\selectfont
+      MINISTRY OF EDUCATION, CULTURE AND RESEARCH\par
+      OF THE REPUBLIC OF MOLDOVA\par
+      Technical University of Moldova\par
+      Faculty of Computers, Informatics and Microelectronics\par
+      Department of Computer Science and Information Technologies\par
+    }
+
+    \vspace{1.4cm}
+    {\bfseries\fontsize{16}{19}\selectfont Dinu Plesu, FAF-241\par}
+
+    \vspace{1.4cm}
+    {\bfseries\fontsize{36}{40}\selectfont Report\par}
+    \vspace{0.25cm}
+    {\itshape\fontsize{20}{24}\selectfont Laboratory Work No. 1\par}
+    {\bfseries\itshape\fontsize{20}{24}\selectfont Cryptography and Security\par}
+
+    \vspace{1cm}
+    {\fontsize{15}{19}\selectfont Topic: Caesar cipher and Caesar cipher with a keyword over the Romanian alphabet\par}
+  \end{center}
+
+  \vfill
+  \begin{flushright}
+    {\fontsize{15}{18}\selectfont Checked by:}\par
+    \textbf{Maia Zaica}
+  \end{flushright}
+
+  \vfill
+  \begin{center}
+    {\bfseries\fontsize{14}{17}\selectfont Chi\c{s}in\u{a}u --- 2026}
+  \end{center}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{2}
+\tableofcontents
+\newpage
+
+\section{Task}
+
+\textbf{Task 1.1.} Implement the Caesar cipher for the Romanian alphabet ($n=31$ letters, encoding of Table~2 of the handout) in a programming language of choice. The program must encrypt and decrypt a text given interactively, using the numeric key $k$ ($1$--$30$), and must reject invalid input with a clear message.
+
+\textbf{Task 1.2.} Implement the Caesar cipher with two keys over the same alphabet, keeping all conditions of Task~1.1. Key~1 is the numeric shift; Key~2 is a keyword of at least 7 Romanian letters (including \u{A}, \^{A}, \^{I}, \c{S}, \c{T}) that is converted to uppercase and is used to build a permuted alphabet, which the program must display so the result can be checked by hand.
+
+\section{Theoretical contents}
+
+The Caesar cipher is the simplest monoalphabetic substitution cipher: every letter is replaced by the letter situated $k$ positions later in the alphabet, cyclically. Over an alphabet $A$ of $n$ letters each letter is identified with its code $\mathrm{code}(x)\in\{0,\ldots,n-1\}$; encryption and decryption are
+
+\begin{align*}
+  c &= (m+k) \bmod n && \text{(encryption)},\\
+  m &= (c-k+n) \bmod n && \text{(decryption)},
+\end{align*}
+with $m,c\in\{0,\ldots,n-1\}$.
+
+For the Romanian alphabet $n=31$ (Table~2 of the handout), so the key space contains only 30 possible keys; an attacker can recover the plaintext by trying all 30 shifts (brute force) or by comparing the letter frequencies of the ciphertext with the reference frequencies of the language.
+
+In the two-key version (Task~1.2) the second key, a keyword, produces a key-dependent permutation of the alphabet: the keyword letters are written first (duplicates removed) and the remaining alphabet letters follow in their natural order. Encryption again uses a cyclic shift, but now in the permuted alphabet. The key space grows to $30\times(\text{number of admissible keywords})$, yet the cipher remains monoalphabetic and is still broken by frequency analysis.
+
+\section{Implementation}
+
+Both tasks were implemented in Go (files \texttt{task1\_1.go} and \texttt{task1\_2.go}). The alphabet and the letter-to-code map are built once; encryption and decryption differ only in the sign of the shift. The core of Task~1.1 is:
+
+\begin{lstlisting}[style=go,caption={Classic Caesar cipher over the 31-letter Romanian alphabet (\texttt{task1\_1.go})}]
+package main
+
+const romanianAlphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ"
+
+func caesarCipher(message []rune, key int, encrypt bool) string {
+	alphabet := []rune(romanianAlphabet)
+	letterCodes := make(map[rune]int, len(alphabet))
+	for code, letter := range alphabet {
+		letterCodes[letter] = code
+	}
+
+	result := make([]rune, 0, len(message))
+	for _, letter := range message {
+		code := letterCodes[letter]
+		if encrypt {
+			code = (code + key) % len(alphabet)
+		} else {
+			code = (code - key + len(alphabet)) % len(alphabet)
+		}
+		result = append(result, alphabet[code])
+	}
+	return string(result)
+}
+\end{lstlisting}
+
+For Task~1.2 the permuted alphabet is constructed by writing the keyword first and then every Romanian letter not yet used:
+
+\begin{lstlisting}[style=go,caption={Construction of the keyword-permuted alphabet (\texttt{task1\_2.go})}]
+func buildPermutedAlphabet(keyword []rune) []rune {
+	result := make([]rune, 0, len([]rune(romanianAlphabet)))
+	included := make(map[rune]bool)
+	for _, letter := range append(keyword, []rune(romanianAlphabet)...) {
+		if isRomanianLetter(letter) && !included[letter] {
+			result = append(result, letter)
+			included[letter] = true
+		}
+	}
+	return result
+}
+\end{lstlisting}
+
+All inputs are validated interactively: the numeric key must be an integer from 1 to 30, the keyword at least 7 Romanian letters, and the message must contain only Romanian letters and spaces (which are removed). Every violation prints a message stating the allowed values and re-prompts the user.
+
+\section{Results of the work}
+
+\reportfigure{fig1_task1_1.png}{Task 1.1 --- encryption with $k=7$ and the decryption round trip.}{fig:task1-1}
+
+\reportfigure{fig2_validation.png}{Task 1.1 --- invalid key (0, 31) and invalid character \texttt{'2'} are rejected.}{fig:task1-2}
+
+\reportfigure{fig3_task1_2.png}{Task 1.2 --- permuted alphabet built from the keyword \texttt{ROMANIA}, encryption and decryption.}{fig:task1-3}
+
+Together the three runs verify the specification end to end: Fig.~\ref{fig:task1-1} shows that encryption and decryption are exact inverses over the 31-letter alphabet; Fig.~\ref{fig:task1-2} confirms that the input constraints (key in 1--30, only Romanian letters and spaces) are enforced with explicit, re-prompting messages instead of crashing; and Fig.~\ref{fig:task1-3} demonstrates the two-key construction, printing the keyword-derived permuted alphabet ``R O M A N I \u{A} \^{A} B C \ldots'' so that the mapping can be checked by hand against the ciphertext.
+
+\section{Conclusions}
+
+Both ciphers were implemented and validated. The classical Caesar cipher has a key space of only 30 keys, so it offers no real security: a ciphertext is recovered instantly by brute force. Moving the shift into a keyword-permuted alphabet enlarges the key space and hides the simple shift pattern, but the cipher stays monoalphabetic --- each plain letter always maps to the same cipher letter --- so it is still defeated by letter frequency analysis and by the recognisable patterns of frequent words. This is exactly the weakness exploited in Laboratory Work No.~2.
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{enumerate}
+  \item Laboratory Work No.~1 --- Caesar Cipher. UTM, FCIM --- handout (\texttt{resources/}).
+  \item Table~2. Letter encoding of the Romanian alphabet ($n=31$) --- handout.
+  \item W.~Stallings. \textit{Cryptography and Network Security: Principles and Practice}. Classical encryption systems.
+\end{enumerate}
+
+\section*{Source Code}
+\addcontentsline{toc}{section}{Source Code}
+
+The complete source code of all laboratory works (Go sources for Labs~1--3, Python sources for Labs~4--6, together with the ciphertext and plaintext files used in Lab~2 and Lab~6) is available in the GitHub repository:
+
+\begin{center}
+  \url{https://github.com/Prince-of-Nothing/CS-labs.git}
+\end{center}
+
+\end{document}

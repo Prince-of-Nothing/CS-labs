@@ -1,0 +1,451 @@
+% CS Labs Report --- Laboratory Work No. 4
+\documentclass[12pt,a4paper]{article}
+
+% Designed for XeLaTeX (Tectonic) and Overleaf.
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}
+\setmonofont{Liberation Mono}[Scale=MatchLowercase]
+\usepackage[english]{babel}
+\usepackage[left=2cm,right=1.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{codebackground}{HTML}{F3F4F6}
+\definecolor{codeframe}{HTML}{D1D5DB}
+\definecolor{commentgreen}{HTML}{3F6212}
+\definecolor{keywordblue}{HTML}{1D4ED8}
+
+\captionsetup[figure]{name=Fig.,labelsep=period,font=small}
+
+\titleformat{\section}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {\thesection}{0.8em}{\MakeUppercase}
+\titleformat{name=\section,numberless}
+  {\normalfont\bfseries\centering\fontsize{13}{16}\selectfont}
+  {}{0pt}{\MakeUppercase}
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{12}{15}\selectfont}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{0pt}{12pt}
+\titlespacing*{\subsection}{0pt}{10pt}{6pt}
+
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{keywordblue}\bfseries,
+  commentstyle=\color{commentgreen}\itshape,
+  stringstyle=\color{red!55!black},
+  backgroundcolor=\color{codebackground},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  extendedchars=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  xleftmargin=0.5cm,
+  framexleftmargin=0.4cm,
+  aboveskip=7pt,
+  belowskip=7pt
+}
+
+\lstdefinestyle{terminal}{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{codebackground},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  numbers=none,
+  xleftmargin=0.3cm,
+  framexleftmargin=0.3cm,
+  aboveskip=7pt,
+  belowskip=7pt
+}
+
+\newcommand{\reportfigure}[4][\textwidth]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \IfFileExists{figures/LOGO_UTM.jpg}{%
+      \includegraphics[width=3.4cm]{figures/LOGO_UTM.jpg}\par
+      \vspace{0.25cm}
+    }{}
+
+    {\bfseries\fontsize{14}{17}\selectfont
+      MINISTRY OF EDUCATION, CULTURE AND RESEARCH\par
+      OF THE REPUBLIC OF MOLDOVA\par
+      Technical University of Moldova\par
+      Faculty of Computers, Informatics and Microelectronics\par
+      Department of Computer Science and Information Technologies\par
+    }
+
+    \vspace{1.0cm}
+    {\bfseries\fontsize{16}{19}\selectfont Dinu Plesu, FAF-241\par}
+
+    \vspace{1.0cm}
+    {\bfseries\fontsize{36}{40}\selectfont Report\par}
+    \vspace{0.25cm}
+    {\itshape\fontsize{20}{24}\selectfont Laboratory Work No. 4\par}
+    {\bfseries\itshape\fontsize{20}{24}\selectfont Cryptography and Security\par}
+
+    \vspace{0.9cm}
+    {\fontsize{20}{25}\selectfont Topic: Block Ciphers. The DES Algorithm\par}
+    \vspace{0.2cm}
+    {\fontsize{15}{19}\selectfont Task 2.9: Determining $S_j(B_j)$ in Round $i$\par}
+  \end{center}
+
+  \vfill
+  \begin{flushright}
+    {\fontsize{15}{18}\selectfont Checked by:}\par
+    \textbf{Maia Zaica}, \textit{university assistant}
+  \end{flushright}
+
+  \vfill
+  \begin{center}
+    {\bfseries\fontsize{14}{17}\selectfont Chi\c{s}in\u{a}u --- 2026}
+  \end{center}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{2}
+\tableofcontents
+\newpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+The purpose of this laboratory work is to study block ciphers and the Data Encryption Standard (DES), and to implement one element of the algorithm. The task is selected by the formula $\mathrm{task} = n \bmod 11$, where $n$ is the student's number in the group register. For $n = 20$ we obtain $20 \bmod 11 = 9$, so this report presents Task 2.9.
+
+Task 2.9 states: in round $i$ of DES the 48-bit value $K_i \oplus E(R_{i-1})$ is known; for a chosen box index $j \in \{1,\ldots,8\}$ the 4-bit output $S_j(B_j)$ of the $j$-th S-box must be determined, with all intermediate steps. The eight 6-bit blocks $B_1,\ldots,B_8$ are exactly the inputs of the eight S-boxes.
+
+The program was written in Python as an interactive console application. It solves the isolated S-box task, but also implements the complete DES algorithm (key schedule, 16 Feistel rounds, final permutation), so the 48-bit value used in the task is a genuine round value and can be checked against the FIPS known-answer vector. It accepts binary or hexadecimal input, can generate values randomly, validates every field separately, and prints every intermediate step.
+
+\newpage
+\section{Short Theory}
+
+\subsection{Block Ciphers and DES}
+
+A block cipher processes the message in fixed-size blocks, transforming each block under a secret key. DES encrypts 64-bit blocks with a 56-bit effective key (64 bits including 8 parity bits). It is a Feistel cipher: the block is passed through an initial permutation $IP$, split into halves $L_0$ and $R_0$ of 32 bits, processed for 16 rounds, and finally passed through the inverse permutation $IP^{-1}$.
+
+\subsection{Structure of One Round}
+
+In round $i$ ($1\le i\le 16$) the halves are updated as
+
+\begin{equation}
+  L_i = R_{i-1}, \qquad R_i = L_{i-1} \oplus f(R_{i-1}, K_i).
+\end{equation}
+
+The round function $f$ consists of four steps:
+
+\begin{enumerate}
+  \item \textbf{Expansion.} The 32-bit $R_{i-1}$ is expanded to 48 bits with the table $E$. Some bits are used twice.
+  \item \textbf{Key mixing.} The result is XORed with the 48-bit round key: $K_i \oplus E(R_{i-1})$.
+  \item \textbf{Substitution.} The 48 bits are divided into eight blocks of six bits, $B_1,\ldots,B_8$. Each $B_j$ is replaced by a 4-bit value $S_j(B_j)$ taken from the S-box $S_j$.
+  \item \textbf{Permutation.} The 32-bit concatenation $S_1(B_1)\ldots S_8(B_8)$ is permuted with $P$.
+\end{enumerate}
+
+Task 2.9 covers step 3: given the 48-bit value produced by steps 1 and 2, it asks for the output of one selected S-box.
+
+\subsection{The S-Boxes}
+
+Each S-box is a fixed $4\times16$ table of 4-bit values. The six input bits are written as $b_1b_2b_3b_4b_5b_6$. The outer bits $b_1b_6$ select the row and the inner bits $b_2b_3b_4b_5$ select the column:
+
+\begin{equation}
+  r = 2b_1 + b_6, \qquad c = 8b_2 + 4b_3 + 2b_4 + b_5.
+\end{equation}
+
+The decimal entry $S_j[r][c]$, written in four-bit binary, is the output. Table~\ref{tab:s1} shows the first S-box; the other seven have the same shape but different entries and are used in the same way.
+
+\begin{table}[H]
+  \centering
+  \caption{The first DES S-box, $S_1$ (rows and columns in decimal).}
+  \label{tab:s1}
+  {\footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{c*{16}{>{\centering\arraybackslash}p{0.45cm}}}
+    \toprule
+    $r\backslash c$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\
+    \midrule
+    0 & 14 & 4 & 13 & 1 & 2 & 15 & 11 & 8 & 3 & 10 & 6 & 12 & 5 & 9 & 0 & 7 \\
+    1 & 0 & 15 & 7 & 4 & 14 & 2 & 13 & 1 & 10 & 6 & 12 & 11 & 9 & 5 & 3 & 8 \\
+    2 & 4 & 1 & 14 & 8 & 13 & 6 & 2 & 11 & 15 & 12 & 9 & 7 & 3 & 10 & 5 & 0 \\
+    3 & 15 & 12 & 8 & 2 & 4 & 9 & 1 & 7 & 5 & 11 & 3 & 14 & 10 & 0 & 6 & 13 \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+The S-boxes are the only non-linear component of DES. Without them the cipher would reduce to a system of linear equations over $GF(2)$; with them, a single input bit change can alter several output bits, which is the basis of the avalanche effect.
+
+\subsection{Computing $S_j(B_j)$}
+
+Let
+
+\begin{equation}
+  A = K_i \oplus E(R_{i-1}) = B_1B_2B_3B_4B_5B_6B_7B_8, \qquad |B_j| = 6\ \mathrm{bits}.
+\end{equation}
+
+For the selected box $j$, the six bits of $B_j$ are split into the row pair $b_1b_6$ and the column quartet $b_2b_3b_4b_5$. The lookup returns
+
+\begin{equation}
+  S_j(B_j) = S_j[\,2b_1+b_6\,][\,8b_2+4b_3+2b_4+b_5\,],
+\end{equation}
+
+a four-bit value. The remaining steps of the round --- the concatenation of all eight outputs, the permutation $P$, and the XOR with $L_{i-1}$ --- are outside Task 2.9, but the program prints them for context.
+
+\section{Implementation}
+
+\subsection{Program Structure}
+
+The program is a single Python file, \texttt{des\_lab.py}. The entry point prints the laboratory title and a menu; each option delegates to a separate function. Option~1 solves Task 2.9, option~2 prints the S-box tables, option~3 prints the key schedule, option~4 encrypts one block and prints all 16 rounds, option~5 runs the FIPS self-test, and option~0 exits. The optional \texttt{--seed} argument fixes the random generator so that a run can be reproduced exactly.
+
+\begin{lstlisting}[style=python,caption={Program entry point (\texttt{des\_lab.py})}]
+def main() -> None:
+    random.seed()  # sursa aleatorie reala (poate fi fixata cu --seed)
+    if '--seed' in sys.argv:
+        random.seed(2026)  # reproducibilitate pentru raport
+
+    print('=' * 78)
+    print('LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES')
+    print('Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):')
+    print('  In runda i am obtinut K_i XOR E(R_i-1) = ... (48 biti);')
+    print('  sa se determine S_j(B_j) pentru un j dat.')
+    print('=' * 78)
+\end{lstlisting}
+
+\subsection{S-Box Tables}
+
+The eight boxes are stored in a three-dimensional list \texttt{SBOX}: the first index selects the box ($0$--$7$), the second the row ($0$--$3$), and the third the column ($0$--$15$). The entries are decimal; the program converts the selected one to four-bit binary with the format specifier \texttt{:04b}. The first two boxes are defined as follows (the remaining six follow the same layout).
+
+\begin{lstlisting}[style=python,caption={Beginning of the \texttt{SBOX} table (boxes $S_1$ and $S_2$)}]
+SBOX = [
+    # S1
+    [[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
+     [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
+     [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
+     [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13]],
+    # S2
+    [[15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
+     [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
+     [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
+     [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9]],
+\end{lstlisting}
+
+\subsection{Input and Validation}
+
+The user may type the 48-bit value as 48 binary digits or as 12 hexadecimal digits, with or without the \texttt{0x} prefix and with optional spaces or underscores. The helper \texttt{bits\_of} normalizes the string and pads it to the requested length; \texttt{grouped} cuts the result into six-bit blocks. The round number is checked against $1\le i\le 16$ and the box index against $1\le j\le 8$. Each field is validated separately and is requested again on error, so a mistake in one value does not discard the others.
+
+\begin{lstlisting}[style=python,caption={Conversion of binary or hexadecimal input and grouping into six-bit blocks}]
+def bits_of(data: str, nbits: int) -> str:
+    """Hex (0x.../fara prefix) sau biti direct -> sir de exact nbits biti."""
+    s = data.strip().replace(' ', '').replace('_', '')
+    if all(c in '01' for c in s) and len(s) == nbits:
+        return s
+    s = s.replace('0x', '').replace('0X', '')
+    if not all(c in '0123456789abcdefABCDEF' for c in s):
+        raise ValueError('datele trebuie sa fie biti sau hexazecimal')
+    if len(s) * 4 > nbits:
+        raise ValueError(f'prea multe cifre hexazecomale pentru {nbits} biti')
+    return format(int(s, 16), f'0{nbits}b')
+
+
+def grouped(bits: str, size: int) -> list:
+    return [bits[i:i + size] for i in range(0, len(bits), size)]
+\end{lstlisting}
+
+\newpage
+\subsection{The S-Box Lookup}
+
+The function \texttt{task\_2\_9} implements the task itself. It converts the 48-bit value, cuts it into eight six-bit blocks, selects $B_j$, reads the row from the first and last bit and the column from the four middle bits, and looks up the result in \texttt{SBOX}. The six lines below are the core of the computation:
+
+\begin{lstlisting}[style=python,caption={S-box lookup for Task 2.9 (\texttt{des\_lab.py})}]
+bits = bits_of(value48, 48)          # cei 48 de biti sub forma de '0'/'1'
+blocks = grouped(bits, 6)            # B1..B8, cate 6 biti
+bj = blocks[j - 1]                   # blocul cutiei cerute
+row = int(bj[0] + bj[5], 2)          # b1 b6  -> linia
+col = int(bj[1:5], 2)                # b2 b3 b4 b5 -> coloana
+value = SBOX[j - 1][row][col]        # iesirea pe 4 biti a cutiei-S
+\end{lstlisting}
+
+The function then prints the eight blocks, the selected $B_j$, the row and column bits, the S-box table with the selected cell marked, the four-bit result, and --- for context --- the outputs of all eight boxes followed by the permutation $P$. The same lookup appears inside the full encryption function:
+
+\begin{lstlisting}[style=python,caption={Use of the eight S-boxes inside the DES round function}]
+        expanded = permute(r, E)
+        x = xor(expanded, rkeys[i])
+        blocks6 = grouped(x, 6)
+        s_out = ''
+        for n in range(8):
+            b = blocks6[n]
+            row = int(b[0] + b[5], 2)
+            col = int(b[1:5], 2)
+            s_out += f'{SBOX[n][row][col]:04b}'
+        f_out = permute(s_out, P)
+        l, r = r, xor(l, f_out)
+\end{lstlisting}
+
+\subsection{Full DES for Verification}
+
+Solving Task 2.9 in isolation would require the user to invent a 48-bit value. To avoid that, the program also implements the complete algorithm: the key schedule (PC-1, the $C_0/D_0$ halves, the per-round left shifts and PC-2), the 16 Feistel rounds, and the final permutation. This makes it possible to obtain a real $K_i\oplus E(R_{i-1})$ from a known key and plaintext and to check the result inside the real round function. The self-test uses the published FIPS vector
+
+\begin{center}
+  \texttt{key = 133457799BBCDFF1}, \quad
+  \texttt{plaintext = 0123456789ABCDEF},
+\end{center}
+
+whose expected ciphertext is \texttt{85E813540F0AB405}.
+
+\section{Results}
+
+The program was run with Python~3. The FIPS known-answer vector, the key schedule, a complete block encryption, and the isolated Task~2.9 lookup were checked; the outputs below are reproducible with \texttt{python3 des\_lab.py --seed}.
+
+\subsection{FIPS Known-Answer Test}
+
+The self-test encrypts the standard block and compares the result with the published ciphertext. The run in Fig.~\ref{fig:fips} reports \texttt{REZULTAT: CORECT - test trecut}, which validates the key schedule, the 16 rounds, the S-boxes, and the final permutation together.
+
+\reportfigure[0.92\textwidth]{fig1_fips_selftest.png}{Self-test against the FIPS known-answer vector: key \texttt{133457799BBCDFF1}, plaintext \texttt{0123456789ABCDEF} $\rightarrow$ ciphertext \texttt{85E813540F0AB405}.}{fig:fips}
+
+\subsection{Key Schedule}
+
+Fig.~\ref{fig:keyschedule} shows the key schedule for the same key: PC-1 removes the eight parity bits and produces the 56-bit value, the halves $C_0$ and $D_0$ are shifted left by one or two positions in each round, and PC-2 compresses each pair to the 48-bit subkey $K_i$. All sixteen subkeys are printed in binary and hexadecimal.
+
+\reportfigure[0.84\textwidth]{fig2_key_schedule.png}{Key schedule --- PC-1, the $C_0/D_0$ halves, the per-round left shifts and the 16 subkeys $K_1\ldots K_{16}$.}{fig:keyschedule}
+
+\subsection{Full Encryption of a Block}
+
+Fig.~\ref{fig:fullencrypt} follows one block through all sixteen rounds. For each round the transcript prints $E(R_{i-1})$, the XOR with $K_i$, the eight six-bit blocks, the eight S-box outputs, the result of $P$, and the new $(L_i,R_i)$. The final ciphertext is \texttt{85E813540F0AB405}, the same value as in the FIPS test. The excerpt shows the initial state, round~1, round~16, and the final permutation; the complete 193-line transcript is saved in \texttt{lab4\_encrypt\_full.txt}.
+
+\begin{figure}[H]
+\centering
+\caption{Full encryption of a block (excerpt) --- round~1 and round~16 show $E(R_{i-1})$, $K_i\oplus E(R_{i-1})$, the S-box outputs and the new $(L,R)$; the final ciphertext matches the FIPS vector.}
+\label{fig:fullencrypt}
+\begin{minipage}{0.98\textwidth}
+\begin{lstlisting}[style=terminal]
+  Textul clar (64 biti) : 0123456789ABCDEF
+  Dupa IP               : 1100110000000000110011001111111111110000101010101111000010101010
+    L0 = 11001100000000001100110011111111
+    R0 = 11110000101010101111000010101010
+
+  Programul de chei (vezi meniul 3 pentru detalii):
+    K 1 = 0x1B02EFFC7072
+    ...
+    K16 = 0xCB3D8B0E17F5
+
+  Runda  1:
+    E(R0)            = 011110100001010101010101011110100001010101010101
+    K1 XOR E(R0)  = 011000010001011110111010100001100110010100100111  (48 biti)
+    B1..B8             = 011000 010001 011110 111010 100001 100110 010100 100111
+    S1..S8             = 0101 1100 1000 0010 1011 0101 1001 0111
+    dupa P (f)         = 00100011010010101010100110111011
+    L1 = R0       = 11110000101010101111000010101010
+    R1 = L0 XOR f = 11101111010010100110010101000100
+
+  ... (rounds 2--15 omitted) ...
+
+  Runda 16:
+    E(R15)            = 001000000110101000000100000110100100000110101000
+    K16 XOR E(R15)  = 111010110101011110001111000101000101011001011101  (48 biti)
+    B1..B8             = 111010 110101 011110 001111 000101 000101 011001 011101
+    S1..S8             = 1010 0111 1000 0011 0010 0100 0010 1001
+    dupa P (f)         = 11001000110000000100111110011000
+    L16 = R15       = 01000011010000100011001000110100
+    R16 = L15 XOR f = 00001010010011001101100110010101
+
+  Schimbul final (R16, L16): 0000101001001100110110011001010101000011010000100011001000110100
+  Dupa permutarea finala FP: 1000010111101000000100110101010000001111000010101011010000000101
+  Blocul criptat (hex)      : 85E813540F0AB405
+\end{lstlisting}
+\end{minipage}
+\end{figure}
+
+\subsection{Task 2.9 Example}
+
+For the example in Fig.~\ref{fig:sbox} the program receives $K_5\oplus E(R_4)=\mathtt{0xC60503EB51A2}$. The 48 bits are split into eight blocks; the third block is $B_3=\mathtt{010100}$. Its outer bits are $b_1b_6=00$, so the row is $0$; its inner bits are $b_2b_3b_4b_5=1010$, so the column is $10$. The entry $S_3[0][10]$ is $12$, i.e.\ $\mathtt{1100}$ in binary. The program prints the whole S-box with this cell marked and then evaluates all eight boxes for context.
+
+\reportfigure[0.84\textwidth]{fig4_task29_sbox.png}{Task 2.9 --- given $K_5\oplus E(R_4)=\mathtt{0xC60503EB51A2}$, the block $B_3=\mathtt{010100}$ gives $r=0$, $c=10$, so $S_3(B_3)=S_3[0][10]=12=1100_2$ (binar).}{fig:sbox}
+
+\subsection{Summary of Verified Behavior}
+
+\begin{table}[H]
+  \centering
+  \caption{Summary of verified behavior.}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}p{0.53\textwidth}}
+    \toprule
+    \textbf{Test} & \textbf{Observed result} \\
+    \midrule
+    FIPS known-answer test & Ciphertext \texttt{85E813540F0AB405} reproduced exactly \\
+    Key schedule & PC-1, $C_0/D_0$, all 16 shifts and subkeys printed \\
+    Full encryption & Final ciphertext matches the FIPS vector \\
+    Task 2.9 lookup & $B_3=\mathtt{010100}\rightarrow r=0,c=10\rightarrow 12=\mathtt{1100}$ \\
+    Binary and hex input & Both accepted for the 48-bit value \\
+    Invalid input & Rejected field by field; only that field is requested again \\
+    Random generation & Produces a reproducible 48-bit value with \texttt{--seed} \\
+    Persistent menu & Continues until option \texttt{0} is selected \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The evidence forms a closed, reproducible loop: Fig.~\ref{fig:fips} anchors the whole implementation to the published FIPS-81 vector, Fig.~\ref{fig:keyschedule} and Fig.~\ref{fig:fullencrypt} expose the internal state --- all sixteen subkeys and a fully traced round --- that a reviewer can recompute by hand, and Fig.~\ref{fig:sbox} isolates the single S-box lookup required by Task~2.9.
+
+\section{Conclusions}
+
+Task~2.9 was solved and cross-checked. The 48-bit value is split into eight six-bit blocks, the outer bits select the row, the inner bits select the column, and the table entry is the four-bit output; for the example, $S_3(B_3)=S_3[0][10]=12=1100_2$. Implementing the entire DES algorithm, not only the isolated lookup, was necessary to obtain a genuine $K_i\oplus E(R_{i-1})$ and to confirm the result inside the real round function; the FIPS known-answer test validates the complete implementation.
+
+The program shows every step explicitly: the eight blocks, the selected block, the row and column bits, the S-box with the chosen cell marked, the result, and the outputs of all eight boxes followed by the permutation $P$. Accepting both binary and hexadecimal input, validating each field separately, and offering reproducible random generation makes the program convenient for checking hand calculations.
+
+The work also shows why the S-boxes are the core of DES: they are the only non-linear step, and without them the cipher would collapse into a system of linear equations over $GF(2)$. DES itself is obsolete because its 56-bit key can be exhausted by brute force, and it has been replaced by Triple DES and AES; its value is educational, as a clear example of a Feistel network with substitution and permutation layers.
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{enumerate}\raggedright
+  \item Lucrare de laborator nr.~4 --- Cifruri bloc. Algoritmul DES. UTM, FCIM --- handout (\texttt{resources/}).
+  \item FIPS PUB 46-3 --- Data Encryption Standard (DES) and the FIPS test vectors.
+  \item W.~Stallings. \textit{Cryptography and Network Security} --- chapter on DES.
+\end{enumerate}
+
+\section*{Source Code}
+\addcontentsline{toc}{section}{Source Code}
+
+The complete source code of all laboratory works (Go sources for Labs~1--3, Python sources for Labs~4--6, together with the ciphertext and plaintext files used in Lab~2 and Lab~6) is available in the GitHub repository:
+
+\begin{center}
+  \url{https://github.com/Prince-of-Nothing/CS-labs.git}
+\end{center}
+
+{\raggedright
+The task is implemented in \texttt{des\_lab.py}; the saved full-encryption transcript is \texttt{lab4\_encrypt\_full.txt}.\par}
+
+\end{document}

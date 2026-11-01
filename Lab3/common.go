@@ -75,6 +75,39 @@ func validateRomanianText(s string) (string, bool, string) {
 	return b.String(), true, ""
 }
 
+// validatePlayfairCiphertext checks a Playfair ciphertext. The 6x6 matrix
+// has five free cells, filled there with the digits 0-4, so a ciphertext may
+// legitimately contain them; plaintext validation still rejects digits.
+func validatePlayfairCiphertext(s string) (string, bool, string) {
+	s = cedillaReplacer.Replace(s)
+	var b strings.Builder
+	for _, r := range s {
+		if r == ' ' || r == '\t' {
+			continue
+		}
+		u := r
+		if u >= 'a' && u <= 'z' {
+			u -= 32
+		}
+		switch r {
+		case 'ă':
+			u = 'Ă'
+		case 'â':
+			u = 'Â'
+		case 'î':
+			u = 'Î'
+		}
+		if _, ok := letterCode(u); ok || (u >= '0' && u <= '4') {
+			b.WriteRune(u)
+			continue
+		}
+		return "", false, fmt.Sprintf(
+			"Caracter invalid: '%c'. Sunt permise literele alfabetului românesc "+
+				"și cifrele 0–4 din matricea Playfair (spațiile se elimină).", r)
+	}
+	return b.String(), true, ""
+}
+
 // normalizeUpper uppercases a (already validated) Romanian text and removes
 // spaces, as required before encryption.
 func normalizeUpper(s string) []rune {

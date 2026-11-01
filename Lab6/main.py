@@ -13,11 +13,12 @@ Sarcina 3: semnatura ElGamal peste hash, p = 2048 biti (din enunt), g = 2
 
 Functia hash se alege dupa formula i = (k mod 24) + 1, unde k este numarul
 de ordine al studentului in lista grupei. Pentru k = 20 (grupa FAF-241):
-  - lista sarcinii 2: i = (20 mod 24) + 1 = 21 -> Whirlpool
+  - lista sarcinii 2: i = (20 mod 24) + 1 = 21 -> NTLM
   - lista sarcinii 3: i = (20 mod 24) + 1 = 21 -> Whirlpool
-Whirlpool nu este in stdlib-ul Python: se foloseste pachetul "whirlpool"
-sau, ca rezerva, OpenSSL (provider legacy); cele doua surse sunt verificate
-incrucisat (aceleasi vectori de test ISO 10118-3).
+NTLM se calculeaza cu implementarea MD4 din md4.py. Whirlpool nu este in
+stdlib-ul Python: se foloseste pachetul "whirlpool" sau, ca rezerva, OpenSSL
+(provider legacy); cele doua surse sunt verificate incrucisat (aceleasi
+vectori de test ISO 10118-3).
 
 Toate valorile hash sunt convertite in intregi zecimali, conform notei din
 enunt (hex -> decimal). Echivalentele Wolfram Alpha sunt comentate la pas.
@@ -263,10 +264,13 @@ print("\nPasul 1: exponentul public e = 65537 (ales astfel incat gcd(e, phi)=1)"
 print("Pasul 2: se genereaza p si q primi de 1536 biti (Wolfram: RandomPrime)...")
 p2 = random_prime(1536)
 q2 = random_prime(1536)
-while q2 == p2:
-    q2 = random_prime(1536)
 n2 = p2 * q2
 phi2 = (p2 - 1) * (q2 - 1)
+# p*q of two 1536-bit primes can be 3071 bits; e must also be invertible.
+while q2 == p2 or n2.bit_length() < 3072 or gcd(e, phi2) != 1:
+    q2 = random_prime(1536)
+    n2 = p2 * q2
+    phi2 = (p2 - 1) * (q2 - 1)
 assert n2.bit_length() >= 3072, "n trebuie sa aiba cel putin 3072 biti"
 assert gcd(e, phi2) == 1
 d2 = modinv(e, phi2)

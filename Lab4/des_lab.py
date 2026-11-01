@@ -17,7 +17,7 @@ Programul:
     lor aleatorii (conform cerintei din enunt);
   * contine implementarea completa a algoritmului DES (programul de chei,
     toate cele 16 runde, permutarile finale), pentru ca intregul algoritm
-    sa poata fi prezentat si verificat (testul FIPS).
+    sa poata fi prezentat si verificat (testul clasic DES).
 
 Verificare cu vectorul de test cunoscut:
     key = 133457799BBCDFF1, plaintext = 0123456789ABCDEF
@@ -331,7 +331,7 @@ def des_encrypt_block(pt: str, key: str, verbose: bool = False) -> str:
 
 
 def self_test() -> bool:
-    """Vector de test cunoscut (FIPS PUB 81 / FIPS-46)."""
+    """Vector de test DES clasic (FIPS 46 / NBS SP 500-20)."""
     ct = des_encrypt_block('0123456789ABCDEF', '133457799BBCDFF1')
     ok = ct == '85E813540F0AB405'
     print(f'  cheie = 133457799BBCDFF1, text clar = 0123456789ABCDEF')
@@ -403,7 +403,7 @@ def main() -> None:
         print('  2 = Afișarea cutiilor-S (tabelele folosite)')
         print('  3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)')
         print('  4 = Criptarea completa a unui bloc (toate cele 16 runde)')
-        print('  5 = Test de verificare (vectorul FIPS)')
+        print('  5 = Test de verificare (vectorul clasic DES)')
         print('  0 = Iesire')
         c = read_choice('Alegeti optiunea: ', ['0', '1', '2', '3', '4', '5'])
 
@@ -429,7 +429,6 @@ def main() -> None:
             else:
                 print('  Selectie invalida.')
         elif c == '3':
-            k = read_48  # doar pentru citirea unui sir valid
             key = read_line('  Cheia DES (8 octeti hex, ex. 133457799BBCDFF1): ')
             try:
                 key_schedule(key, verbose=True)

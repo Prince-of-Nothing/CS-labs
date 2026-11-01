@@ -1,7 +1,10 @@
 # Laboratory Work No. 1 — The Caesar Cipher
 
+> **Note:** these are working notes; the submitted report is
+> `Report_Lab1_Caesar_Dinu_Plesu.docx`.
+
 **Topic:** Caesar cipher and Caesar cipher with a keyword-based alphabet permutation over the Romanian alphabet
-**Author:** *(student name)* — **Group:** *(group name)*
+**Author:** Dinu Plesu — **Group:** FAF-241
 **Language:** Go (Golang) — source in `Lab1/` (`main.go`, `task1_1.go`, `task1_2.go`)
 
 ---
@@ -189,7 +192,7 @@ In every case the program re-prompts for the value instead of crashing. Lowercas
 
 ## 6. Source Code
 
-GitHub repository: **https://github.com/`<username>`/`<repo>`** *(update with your actual link)*
+GitHub repository: **https://github.com/Prince-of-Nothing/CS-labs.git**
 
 Structure:
 ```

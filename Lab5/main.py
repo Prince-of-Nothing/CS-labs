@@ -17,6 +17,7 @@ Notes:
 import hashlib
 import random
 import sys
+from math import gcd
 
 P_2048 = int("""3231700607131100730015351347782516336248805713348907517458843413926
 980683413621000279205636264016468545855635793533081692882902308057347
@@ -76,16 +77,16 @@ def rsa():
     m, hx = msg_to_int(MSG)
     print("== Sarcina 2.1 RSA ==")
     print(f"Mesaj: {MSG!r} -> hex {hx} -> zecimal m = {m}")
-    p = gen_prime(1024)
-    q = gen_prime(1024)
-    n = p * q
-    # doua prime de 1024 biti pot da un modul de 2047 biti; regeneram pana
-    # cand N are exact 2048 de biti (RSA-2048 propriu-zis)
-    while n.bit_length() < 2048:
+    e = 65537
+    while True:
+        p = gen_prime(1024)
         q = gen_prime(1024)
         n = p * q
-    phi = (p - 1) * (q - 1)
-    e = 65537
+        phi = (p - 1) * (q - 1)
+        # two 1024-bit primes can give a 2047-bit modulus; also e must be
+        # invertible modulo phi (otherwise d does not exist)
+        if n.bit_length() >= 2048 and gcd(e, phi) == 1:
+            break
     d = pow(e, -1, phi)
     assert n.bit_length() >= 2048
     c = pow(m, e, n)

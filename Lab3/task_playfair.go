@@ -212,7 +212,14 @@ func runPlayfair(s *scanner) {
 			os.Exit(0)
 		}
 		line := s.nextLine()
-		norm, ok, msg := validateRomanianText(line)
+		var norm string
+		var ok bool
+		var msg string
+		if operation == opDecrypt {
+			norm, ok, msg = validatePlayfairCiphertext(line)
+		} else {
+			norm, ok, msg = validateRomanianText(line)
+		}
 		if !ok {
 			fmt.Println(msg)
 			continue

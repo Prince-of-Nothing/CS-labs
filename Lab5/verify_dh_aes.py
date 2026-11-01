@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Verificare independentă pentru Sarcina 3: derivarea cheii AES-256 din secretul
 Diffie-Hellman și criptarea unui bloc cu AES-256 (implementare proprie, fără
-biblioteci externe de criptare). Compară rezultatul cu cel produs de programul Go."""
+biblioteci externe de criptare). Compară rezultatul cu parametrii DH salvați în
+dh_params.txt."""
 import hashlib
+import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
 
 def load(f):
     d = {}
@@ -108,7 +113,7 @@ ct = aes_encrypt_block(list(kt_pt), expand_key256(kt_key))
 assert ct.hex() == "8ea2b7ca516745bfeafc49904b496089", ct.hex()
 print("KAT AES-256 FIPS-197: OK ->", ct.hex())
 
-h = load("dh_params.txt")
+h = load(os.path.join(HERE, "dh_params.txt"))
 K = int(h["K"])
 key = hashlib.sha256(K.to_bytes(256, "big")).digest()
 print("AES key hex:", key.hex())

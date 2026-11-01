@@ -15,13 +15,42 @@ Exit status is non-zero when any check fails, so this can gate a commit.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GOCACHE = "/tmp/opencode/gocache"
+BIN_EXT = ".exe" if os.name == "nt" else ""
+GOCACHE = os.path.join(tempfile.gettempdir(), "opencode", "gocache")
+
+
+def find_bash():
+    """Return a bash that can run Lab 5.2 (Git Bash on Windows)."""
+    if os.name == "nt":
+        for cand in (r"C:\Program Files\Git\bin\bash.exe",
+                     r"C:\Program Files\Git\usr\bin\bash.exe"):
+            if os.path.exists(cand):
+                return cand
+    return shutil.which("bash")
+
+
+def find_openssl():
+    """Return an OpenSSL binary (Git's build on Windows)."""
+    got = shutil.which("openssl")
+    if got:
+        return got
+    if os.name == "nt":
+        for cand in (r"C:\Program Files\Git\usr\bin\openssl.exe",
+                     r"C:\Program Files\Git\bin\openssl.exe"):
+            if os.path.exists(cand):
+                return cand
+    return None
+
+
+BASH = find_bash()
+OPENSSL = find_openssl() or "openssl"
 
 RESULTS: list[tuple[str, str, str, str]] = []   # lab, description, status, detail
 
@@ -39,6 +68,7 @@ def sh(args, stdin="", cwd=None, timeout=90):
     """Run a command, return (stdout+stderr, returncode)."""
     try:
         p = subprocess.run(args, input=stdin, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace",
                            cwd=cwd, timeout=timeout)
         return p.stdout + p.stderr, p.returncode
     except FileNotFoundError as exc:
@@ -57,17 +87,19 @@ def find_go():
 
 def go_binary(lab_dir, name):
     """Return the path of a Go binary, rebuilding it from source if needed."""
-    path = os.path.join(REPO, lab_dir, name)
+    path = os.path.join(REPO, lab_dir, name + BIN_EXT)
     if os.path.exists(path):
         return path
     go = find_go()
     if not go:
         return None
+    os.makedirs(GOCACHE, exist_ok=True)
     env = dict(os.environ, GOCACHE=GOCACHE, PATH=os.path.dirname(go) +
                os.pathsep + os.environ.get("PATH", ""))
-    p = subprocess.run([go, "build", "-o", name, "."],
+    p = subprocess.run([go, "build", "-o", name + BIN_EXT, "."],
                        cwd=os.path.join(REPO, lab_dir), env=env,
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, encoding="utf-8",
+                       errors="replace")
     return path if p.returncode == 0 else None
 
 
@@ -76,13 +108,15 @@ def rebuild_go(lab_dir, name):
     go = find_go()
     if not go:
         return None
+    os.makedirs(GOCACHE, exist_ok=True)
     env = dict(os.environ, GOCACHE=GOCACHE,
                PATH=os.path.dirname(go) + os.pathsep +
                os.environ.get("PATH", ""))
-    p = subprocess.run([go, "build", "-o", name, "."],
+    p = subprocess.run([go, "build", "-o", name + BIN_EXT, "."],
                        cwd=os.path.join(REPO, lab_dir), env=env,
-                       capture_output=True, text=True)
-    return os.path.join(REPO, lab_dir, name) if p.returncode == 0 else None
+                       capture_output=True, text=True, encoding="utf-8",
+                       errors="replace")
+    return os.path.join(REPO, lab_dir, name + BIN_EXT) if p.returncode == 0 else None
 
 
 # --------------------------------------------------------------------------
@@ -141,6 +175,31 @@ def verify_lab2():
           ok_demo, next((l.strip() for l in out.splitlines()
                          if "Chi-square" in l), "no chi-square line"))
 
+    # Replay the 13 corrections recorded in the report on the V20 ciphertext
+    # and compare the result with the recovered plaintext.
+    cipher = open(os.path.join(REPO, "Lab2", "v20_cipher.txt"),
+                  encoding="utf-8").read().strip()
+    corrections = ["G=N", "N=O", "I=R", "P=S", "Q=H", "C=F", "D=U",
+                   "J=G", "Z=M", "A=B", "R=W", "B=Q", "Y=X"]
+    stdin = "2\nen\n" + cipher + "\n" + "\n".join(corrections) + \
+            "\ntext\ngata\n0\n"
+    out, rc = sh([exe], stdin)
+    lines = out.splitlines()
+    start = max((i for i, l in enumerate(lines) if l.strip() == "> text"),
+                default=None)
+    got = ""
+    if start is not None:
+        block = []
+        for line in lines[start + 1:]:
+            if line.strip() == "> gata":
+                break
+            block.append(line)
+        got = re.sub(r"[^A-Z]", "", "".join(block).upper())
+    want = re.sub(r"[^A-Z]", "", open(os.path.join(REPO, "Lab2",
+                 "v20_plain.txt"), encoding="utf-8").read().upper())
+    check(lab, "V20 attack (13 corrections) recovers the full plaintext",
+          rc == 0 and got == want, f"{len(got)} letters")
+
 
 # --------------------------------------------------------------------------
 # Lab 3 - Vigenere (task 3.2) and Playfair (task 3.1)
@@ -181,6 +240,16 @@ def verify_lab3():
               "Criptograma" in out2 or "criptografia" in out2.lower()
               or "CRIPTOGRAFIA" in out2, "")
 
+    # The 6x6 grid has five free cells filled with digits 0-4. A ciphertext
+    # can therefore contain a digit and must be accepted on decryption.
+    out, rc = sh([exe], "1\n1\nROMANIA\nZO\n0\n")
+    cip = next((l.split("Criptograma:", 1)[1].strip()
+                for l in out.splitlines() if "Criptograma:" in l), "")
+    out2, _ = sh([exe], "1\n2\nROMANIA\n%s\n0\n" % cip)
+    check(lab, "Playfair digit fillers round-trip (ZO -> 0R -> ZO)",
+          rc == 0 and cip == "0R" and "ZO" in out2,
+          "ciphertext %r" % cip)
+
 
 # --------------------------------------------------------------------------
 # Lab 4 - DES (task 2.9, FIPS self-test)
@@ -191,13 +260,13 @@ def verify_lab4():
     V5 = "110001100000010100000011111010110101000110100010"
 
     out, rc = sh([sys.executable, "-B", script, "--seed"], "5\n0\n")
-    check(lab, "FIPS-197 vector self-test passes",
+    check(lab, "classic DES known-answer vector self-test passes",
           rc == 0 and "text cifrat obtinut = 85E813540F0AB405" in out
           and "REZULTAT: CORECT" in out,
           next((l.strip() for l in out.splitlines() if "REZULTAT" in l), ""))
 
     out, rc = sh([sys.executable, "-B", script, "--seed"], "4\n0123456789ABCDEF\n133457799BBCDFF1\n0\n")
-    check(lab, "full 16-round encryption matches the FIPS ciphertext",
+    check(lab, "full 16-round encryption matches the expected ciphertext",
           rc == 0 and "85E813540F0AB405" in out, "")
 
     out, rc = sh([sys.executable, "-B", script, "--seed"], "1\n5\n%s\n3\n0\n" % V5)
@@ -239,7 +308,7 @@ def verify_lab6():
     cwd = os.path.join(REPO, "Lab6")
 
     out, rc = sh([sys.executable, "-B", "md4.py"], cwd=cwd)
-    check(lab, "MD4/NTLM matches the RFC 1320 vectors",
+    check(lab, "MD4/NTLM matches all 7 RFC 1320 vectors",
           rc == 0 and "MD4 self-test OK" in out,
           next((l.strip() for l in out.splitlines() if "MD4" in l), ""))
 
@@ -268,25 +337,28 @@ def verify_lab52():
     lab = "Lab5.2"
     root = os.path.join(REPO, "Lab5.2")
     pki = os.path.join(root, "pki")
+    if not BASH:
+        skip(lab, "bash is available for pki.sh", "install Git Bash or bash")
+        return
 
-    out, rc = sh(["openssl", "verify", "-CAfile",
+    out, rc = sh([OPENSSL, "verify", "-CAfile",
                   os.path.join(pki, "ca", "ca.cert.pem"),
                   os.path.join(pki, "users", "alice", "alice.cert.pem"),
                   os.path.join(pki, "users", "bob", "bob.cert.pem")])
     check(lab, "both user certificates chain to the CA",
           rc == 0 and out.count(": OK") == 2, out.strip()[:70])
 
-    out, rc = sh(["./pki.sh", "status"], cwd=root)
+    out, rc = sh([BASH, "./pki.sh", "status"], cwd=root)
     check(lab, "CA status lists the enrolled users",
           rc == 0 and "alice" in out and "bob" in out, "")
 
-    out, rc = sh(["./pki.sh", "crl"], cwd=root)
+    out, rc = sh([BASH, "./pki.sh", "crl"], cwd=root)
     check(lab, "CRL lists the revoked certificate",
           rc == 0 and ("bob" in out or "Revoked" in out or "Serial" in out),
           out.strip()[:70])
 
     # Expected negative test: bob's certificate was revoked on purpose.
-    out, rc = sh(["./pki.sh", "verify", "bob", "bob_doc.txt"], cwd=root)
+    out, rc = sh([BASH, "./pki.sh", "verify", "bob", "bob_doc.txt"], cwd=root)
     check(lab, "revoked certificate is refused (expected negative test)",
           rc != 0 and ("revoked" in out.lower() or "FAILED" in out),
           next((l.strip() for l in out.splitlines() if "RESULT" in l), ""))
@@ -296,26 +368,27 @@ def verify_lab52():
     # original first line - and the tampered file must then be refused.
     doc = os.path.join(pki, "alice_doc.txt")
     if os.path.exists(doc):
-        with open(doc, encoding="utf-8") as fh:
+        with open(doc, "rb") as fh:
             original = fh.readline()
-        pub, _ = sh(["openssl", "x509", "-in",
+        pub, _ = sh([OPENSSL, "x509", "-in",
                      os.path.join(pki, "users", "alice", "alice.cert.pem"),
                      "-pubkey", "-noout"])
         with tempfile.TemporaryDirectory() as td:
             pubf = os.path.join(td, "alice.pub")
             origf = os.path.join(td, "original.txt")
-            with open(pubf, "w", encoding="utf-8") as fh:
-                fh.write(pub)
-            with open(origf, "w", encoding="utf-8") as fh:
+            with open(pubf, "wb") as fh:
+                fh.write(pub.encode("utf-8"))
+            with open(origf, "wb") as fh:
                 fh.write(original)
-            out, rc = sh(["openssl", "dgst", "-sha256", "-verify", pubf,
+            out, rc = sh([OPENSSL, "dgst", "-sha256", "-verify", pubf,
                           "-signature", os.path.join(pki, "alice_doc.txt.sig.bin"),
                           origf])
         check(lab, "alice's signature verifies against the untampered document",
               rc == 0 and "Verified OK" in out,
               "Verified OK" if rc == 0 else out.strip().splitlines()[-1][:60])
 
-        out, rc = sh(["./pki.sh", "verify", "alice", "alice_doc.txt"], cwd=root)
+        out, rc = sh([BASH, "./pki.sh", "verify", "alice", "alice_doc.txt"],
+                     cwd=root)
         check(lab, "tampered document is refused (report's tamper demo)",
               rc != 0 and "FAILED" in out,
               next((l.strip() for l in out.splitlines() if "RESULT" in l), ""))

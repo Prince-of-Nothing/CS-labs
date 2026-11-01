@@ -75,13 +75,21 @@ sign_file() {
 verify_file() {
     local USER="$1" FILE="$2"
     local UDIR="users/$USER"
+    local PUB="$UDIR/$USER.pub.pem"
 
     log "[$USER] Verifying signature of '$FILE' against the CA chain"
-    if openssl dgst -sha256 -verify <(openssl x509 -in "$UDIR/$USER.cert.pem" -pubkey -noout) \
+    openssl x509 -in "$UDIR/$USER.cert.pem" -pubkey -noout > "$PUB"
+    # The tracked PKI is a recorded snapshot whose CRL has expired; ignore
+    # wall-clock time so the revocation demo stays reproducible. Regenerate
+    # the PKI (init/issue/sign/revoke) for a live deployment.
+    if openssl dgst -sha256 -verify "$PUB" \
         -signature "$FILE.sig.bin" "$FILE" \
-        && openssl verify -CAfile "$CA_CERT" -crl_check -CRLfile ca/crl/ca.crl.pem "$UDIR/$USER.cert.pem"; then
+        && openssl verify -no_check_time -CAfile "$CA_CERT" -crl_check \
+           -CRLfile ca/crl/ca.crl.pem "$UDIR/$USER.cert.pem"; then
+        rm -f "$PUB"
         echo "RESULT: signature VALID and certificate trusted/not revoked"
     else
+        rm -f "$PUB"
         echo "RESULT: verification FAILED (bad signature or revoked/untrusted certificate)"
         return 1
     fi
