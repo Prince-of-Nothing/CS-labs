@@ -42,7 +42,7 @@ except ImportError:
     except ImportError:
         _MD4lib = None
 
-HERE = os.path.dirname(os.path.abspath(__file__))   # folderul Lab6/
+HERE = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else os.path.dirname(os.path.abspath(__file__))   # folderul Lab6/
 LAB2_PLAIN = os.path.join(HERE, os.pardir, "Lab2", "v20_plain.txt")
 
 STUDENT_NO = 20         # <<< numarul de ordine in lista grupei (FAF-241)

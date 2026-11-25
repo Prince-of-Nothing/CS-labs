@@ -38,7 +38,7 @@ Q_ORDER = (P_2048 - 1) // 2          # P_2048 is a safe prime, ord(2) = Q_ORDER
 # for keys.
 RNG = random.SystemRandom()
 MSG = "Dinu Plesu"
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else os.path.dirname(os.path.abspath(__file__))
 
 
 def save(name, header, values):

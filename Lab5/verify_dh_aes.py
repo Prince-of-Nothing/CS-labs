@@ -5,8 +5,9 @@ biblioteci externe de criptare). Compară rezultatul cu parametrii DH salvați �
 dh_params.txt."""
 import hashlib
 import os
+import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else os.path.dirname(os.path.abspath(__file__))
 
 
 def load(f):
