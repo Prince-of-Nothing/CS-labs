@@ -1,12 +1,8 @@
-Lab1/REPORT.docx
-Lab1/~$REPORT.docx
-*.png
-__pycache__/
-
-# compiled binaries (rebuild with `go build`)
-Lab1/caesar
-Lab1/lab1
-Lab2/lab2
-Lab2/freq
-Lab3/lab3
+# compiled Go binaries (rebuild with `go build`)
 *.exe
+Lab1/caesar
+Lab2/lab2
+Lab3/lab3
+
+# Python cache
+__pycache__/

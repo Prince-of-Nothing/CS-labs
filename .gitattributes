@@ -1,6 +1,2 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-
-# Signed documents must keep their exact bytes (LF, no trailing newline),
-# otherwise the detached RSA signatures stop verifying on Windows checkouts.
-Lab5.2/pki/*.txt -text

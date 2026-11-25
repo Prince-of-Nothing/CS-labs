@@ -9,12 +9,15 @@ Usage:
 
 Notes:
   * The task statement asks for Wolfram Alpha/Mathematica; the Wolfram-language
-    equivalents are listed in REPORT.md. This script reproduces every numeric
+    equivalents are listed in section 3 of the report. This script reproduces every numeric
     result with Python's arbitrary precision integers (same primitives as
     PowerMod/ModInverse/PrimeQ) so the report can be verified offline.
   * Message conversion follows the lab note: ASCII -> hex string -> decimal int.
+  * Every run saves the full (unshortened) values to rsa_params.txt,
+    elgamal_params.txt and dh_params.txt; verify_dh_aes.py reads dh_params.txt.
 """
 import hashlib
+import os
 import random
 import sys
 from math import gcd
@@ -35,6 +38,15 @@ Q_ORDER = (P_2048 - 1) // 2          # P_2048 is a safe prime, ord(2) = Q_ORDER
 # for keys.
 RNG = random.SystemRandom()
 MSG = "Dinu Plesu"
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def save(name, header, values):
+    """Write the full values of one task to name (key=value, one per line)."""
+    with open(os.path.join(HERE, name), "w", encoding="utf-8") as f:
+        f.write(f"# {header}\n")
+        for key, value in values.items():
+            f.write(f"{key}={value}\n")
 
 
 def msg_to_int(msg: str) -> int:
@@ -103,6 +115,9 @@ def rsa():
     print(f"Criptare:   c = m^e mod N = {short(c)}")
     print(f"Decriptare: m' = c^d mod N = {mr}  ->  {'OK' if mr == m else 'GRESIT'}")
     print(f"Verificare: (e*d) mod phi = {(e * d) % phi}")
+    save("rsa_params.txt", f"RSA parameters, n = {n.bit_length()} bits, message {MSG!r}",
+         {"P": p, "Q": q, "N": n, "phi": phi, "e": e, "d": d,
+          "m_dec": m, "m_hex": "0x" + hx, "c": c})
 
 
 def elgamal():
@@ -125,6 +140,9 @@ def elgamal():
     print(f"c2 = m*s mod p = {short(c2)}")
     print(f"Criptograma = (c1, c2)")
     print(f"Decriptare: m = c2 * (c1^x)^-1 mod p = {mr} -> {'OK' if mr == m else 'GRESIT'}")
+    save("elgamal_params.txt", f"ElGamal parameters (p 2048-bit safe prime, g=2), message {MSG!r}",
+         {"x": x, "y": y, "k": k, "c1": c1, "s_shared": s, "c2": c2,
+          "m_dec": m, "m_hex": "0x" + hx})
 
 
 def dh():
@@ -144,6 +162,8 @@ def dh():
     print(f"K (Alisa=B^a)    = {short(Ka)}")
     print(f"K (Bob=A^b)      = {short(Kb)}  -> identice: {Ka == Kb}")
     print(f"Cheie AES-256 = SHA-256(K) = {key.hex()}")
+    save("dh_params.txt", "Diffie-Hellman parameters (p 2048-bit safe prime, g=2)",
+         {"a": a, "b": b, "A": A, "B": B, "K": Ka, "aes256_key_sha256_hex": key.hex()})
     print("Blocul 'Dinu Plesu' padulat la 16 octeți se criptează cu această cheie")
     print("prin AES-256 (vezi verify_dh_aes.py pentru valorile exacte ale blocului).")
 
