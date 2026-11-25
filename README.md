@@ -77,9 +77,10 @@ The code prints the same choice at start-up.
 ## Working on one lab without redoing the others
 
 The reports are generated from `build_reports.py`, then finalized in WordCraft.
-The committed Lab 1, 3, 4, 5 and 6 `.docx` files also contain hand edits that
-are not in the generator, so rebuilding one of those produces the earlier
-layout. Lab 2 is the generated version with the online-service figures.
+All six committed `.docx` files also contain hand edits that are not in the
+generator, so rebuilding one of them produces the earlier layout. Lab 2's hand
+edits are the step-by-step description of the attack (Observations, item 3)
+and the code excerpt taken from `freq.go`.
 
 ```bash
 python3 reportgen/build_reports.py 3   # rebuild Laboratory 3's report only
@@ -163,9 +164,9 @@ The six reports are UTM/FCIM template documents (A4, Times New Roman 12 pt,
 properties, TOC fields, alt text and PDFs. Lab 2 also includes screenshots
 from the online frequency-analysis service suggested in the handout.
 
-**Note:** the committed Lab 1, 3, 4, 5 and 6 reports contain final hand edits
-(step tables, equation numbers and expanded references) that are not in
-`build_reports.py`. Rebuilding those five gives the earlier layout. Keep the
+**Note:** all six committed reports contain final hand edits (step tables,
+equation numbers, expanded references and, in Lab 2, the step-by-step attack)
+that are not in `build_reports.py`. Rebuilding them gives the earlier layout. Keep the
 committed `.docx`/PDF versions as the submitted copies, or port the hand edits
 back into the generator first.
 
@@ -177,7 +178,9 @@ wordcraft-cli convert Lab4/Report_Lab4_DES_Dinu_Plesu.docx \
 ```
 
 The same command works for any report. The PDFs in `pdf/` are the exported
-versions. If you rebuild a report with `build_reports.py`, run the WordCraft
+versions; the Lab 2 and Lab 3 PDFs were last exported with LibreOffice
+(`soffice --headless --convert-to pdf --outdir pdf <report>.docx`), which gives
+the same pagination as the WordCraft export. If you rebuild a report with `build_reports.py`, run the WordCraft
 step again; otherwise Word can also refresh the field with `F9`. The global
 OpenCode `wordcraft` skill and MCP server expose the same workflow: open,
 inspect, update the TOC, set document properties, save and export.

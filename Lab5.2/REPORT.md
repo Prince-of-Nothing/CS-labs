@@ -9,7 +9,7 @@
 ## 1. Obiective și condiții
 
 Crearea unei infrastructuri cheie publice (PKI) interne folosind OpenSSL:
-- generarea cheii private root și inițializarea unei Certificat Authority (CA);
+- generarea cheii private root și inițializarea unei autorități de certificare (Certificate Authority, CA);
 - certificat auto-semnat pentru CA;
 - emiterea și revocarea certificatelor/cheilor private pentru utilizatori;
 - fiecare utilizator poate semna un fișier/document și verifica semnătura.
@@ -89,7 +89,7 @@ openssl dgst -sha256 -verify "$UDIR/$USER.pub.pem" \
 openssl verify -no_check_time -CAfile "$CA_CERT" -crl_check \
     -CRLfile ca/crl/ca.crl.pem "$UDIR/$USER.cert.pem"
 ```
-Verificarea are două niveluri: (1) integritatea+autenticitatea conținutului prin ridicarea semnăturii la puterea publică `e` și compararea cu hash-ul recomandat; (2) încrederea în certificatul emitentului — semnătura CA și consultarea CRL pentru revocare. `-no_check_time` păstrează reproductibil demo-ul pe snapshot-ul din repository (CRL-ul înregistrat a expirat); într-un PKI live se reînnoiește CRL-ul și flags-ul se elimină.
+Verificarea are două niveluri: (1) integritatea+autenticitatea conținutului prin ridicarea semnăturii la puterea publică `e` și compararea cu hash-ul recalculat al fișierului; (2) încrederea în certificatul emitentului — semnătura CA și consultarea CRL pentru revocare. `-no_check_time` păstrează reproductibil demo-ul pe snapshot-ul din repository (CRL-ul înregistrat a expirat); într-un PKI live se reînnoiește CRL-ul și flags-ul se elimină.
 
 ### 4.5 Revocarea și CRL
 
@@ -97,7 +97,7 @@ Verificarea are două niveluri: (1) integritatea+autenticitatea conținutului pr
 openssl ca -config "$CONF" -batch -revoke "users/$USER/$USER.cert.pem" -crl_reason keyCompromise
 openssl ca -config "$CONF" -batch -gencrl -out ca/crl/ca.crl.pem
 ```
-Întrarea din `index.txt` trece de la `V` (valid) la `R` (revocat) cu data și motivul revocării; CRL-ul reemis este semnat de CA și conține serialul certificatului revocat, ceea ce face ca verificările ulterioare să eșueze (`error 23: certificate revoked`).
+Intrarea din `index.txt` trece de la `V` (valid) la `R` (revocat) cu data și motivul revocării; CRL-ul reemis este semnat de CA și conține serialul certificatului revocat, ceea ce face ca verificările ulterioare să eșueze (`error 23: certificate revoked`).
 
 ## 5. Rezultate (transcrieri reale ale rulării)
 
