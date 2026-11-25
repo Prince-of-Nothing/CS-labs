@@ -23,10 +23,10 @@ func vigenereKeyCodes(keyword string) ([]int, bool, string) {
 	if !ok {
 		return nil, false, msg
 	}
-	if len(upper) < minKeywordLen {
+	if count := len([]rune(upper)); count < minKeywordLen {
 		return nil, false, fmt.Sprintf(
 			"Cuvântul-cheie este prea scurt: are %d litere, dar lungimea minimă este %d caractere.",
-			len(upper), minKeywordLen)
+			count, minKeywordLen)
 	}
 	codes := make([]int, 0, len(upper))
 	for _, r := range upper {

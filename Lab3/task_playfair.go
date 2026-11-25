@@ -51,10 +51,10 @@ func buildPlayfairMatrix(keyword string) (*playfairMatrix, bool, string) {
 	if !ok {
 		return nil, false, msg
 	}
-	if len(upper) < minKeywordLen {
+	if count := len([]rune(upper)); count < minKeywordLen {
 		return nil, false, fmt.Sprintf(
 			"Cheia este prea scurtă: are %d litere, dar lungimea minimă este %d caractere.",
-			len(upper), minKeywordLen)
+			count, minKeywordLen)
 	}
 	m := &playfairMatrix{pos: make(map[rune][2]int), digits: "01234"}
 	used := map[rune]bool{}
