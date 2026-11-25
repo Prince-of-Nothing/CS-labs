@@ -13,32 +13,32 @@ Lungimea textului analizat: 2979 litere
 
 Let  Nr     % text    % asteptat  
 ------------------------------------
-V    363    12.19     0.00        
-W    310    10.41     0.00        
-T    300    10.07     0.00        
-G    221    7.42      0.00        
-X    213    7.15      0.00        
-N    212    7.12      0.00        
-I    192    6.45      0.00        
-P    178    5.98      0.00        
-Q    146    4.90      0.00        
-O    117    3.93      0.00        
-S    114    3.83      0.00        
-H    101    3.39      0.00        
-C    72     2.42      0.00        
-D    64     2.15      0.00        
-J    59     1.98      0.00        
-Z    57     1.91      0.00        
-A    56     1.88      0.00        
-F    52     1.75      0.00        
-U    51     1.71      0.00        
-R    46     1.54      0.00        
-K    25     0.84      0.00        
-L    15     0.50      0.00        
-E    9      0.30      0.00        
-B    3      0.10      0.00        
-Y    2      0.07      0.00        
-M    1      0.03      0.00        
+V    363    12.19     12.70       
+W    310    10.41     9.06        
+T    300    10.07     8.17        
+G    221    7.42      7.51        
+X    213    7.15      6.97        
+N    212    7.12      6.75        
+I    192    6.45      6.33        
+P    178    5.98      6.09        
+Q    146    4.90      5.99        
+O    117    3.93      4.25        
+S    114    3.83      4.03        
+H    101    3.39      2.78        
+C    72     2.42      2.76        
+D    64     2.15      2.41        
+J    59     1.98      2.36        
+Z    57     1.91      2.23        
+A    56     1.88      2.01        
+F    52     1.75      1.97        
+U    51     1.71      1.93        
+R    46     1.54      1.49        
+K    25     0.84      0.98        
+L    15     0.50      0.77        
+E    9      0.30      0.15        
+B    3      0.10      0.15        
+Y    2      0.07      0.09        
+M    1      0.03      0.07        
 
 Substitutie automata (cea mai freq. litera din criptograma -> cea mai freq. litera a limbii):
 A->G B->X C->U D->M E->J F->Y G->O H->C I->S J->W K->V L->K 
@@ -99,7 +99,7 @@ CNMLDTREOCAHTIOTNTREHEAALLTRSEESEHIWOED
 
 Chi-square al substitutiei automate: 47.8 (cu cat e mai mic, cu atat se apropie mai mult de limba tinta)
 
-Etapa interactiva: affinati corespondentele (traseuri de personalitate ale literelor,
+Etapa interactiva: afinati corespondentele (traseuri de personalitate ale literelor,
 ex. cuvinte de 2-3 litere, digrafe/trigrafe frecvente). Comenzi:
    <CIFRATA>=<CLARA>   ex: S=E     (asigneaza / schimba o corespondenta)
    del <CIFRATA>       sterge o asignare

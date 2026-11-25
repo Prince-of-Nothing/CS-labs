@@ -17,3 +17,8 @@ echo
 
 echo '$ ./lab3                        # verificarea validarilor (cheie prea scurta / caractere invalide)'
 printf '2\n1\nAB\nAB12\n%s\n%s\n0\n' "$KW" "$MSG" | ./lab3 | sed -n '1,12p'
+echo
+
+echo '$ ./lab3                        # Sarcina 3.1: Playfair (optiunea 1) - criptare + decriptare, k = ROMANIA'
+PCIP=$(printf '1\n1\n%s\n%s\n0\n' "$KW" "$MSG" | ./lab3 | sed -n 's/^Criptograma: //p')
+printf '1\n1\n%s\n%s\n1\n2\n%s\n%s\n0\n' "$KW" "$MSG" "$KW" "$PCIP" | ./lab3

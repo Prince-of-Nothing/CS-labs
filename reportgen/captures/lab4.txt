@@ -1,4 +1,4 @@
-$ python3 des_lab.py --seed     # meniul 5: test de verificare (vectorul FIPS)
+$ python3 des_lab.py --seed     # meniul 5: test de verificare (vectorul clasic DES)
 ==============================================================================
 LUCRAREA DE LABORATOR NR. 4 - CIFRURI BLOC. ALGORITMUL DES
 Sarcina 2.9 (k = 20 -> nr_sarcina = 20 mod 11 = 9):
@@ -11,7 +11,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: 
 --- Test de verificare ---
@@ -25,7 +25,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: La revedere!
 
@@ -42,7 +42,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea:   Cheia DES (8 octeti hex, ex. 133457799BBCDFF1):   Cheia (64 biti): 133457799BBCDFF1  0001001100110100010101110111100110011011101111001101111111110001
   Bitii de paritate (8,16,...,64) se elimina prin PC-1.
@@ -86,7 +86,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: La revedere!
 
@@ -105,7 +105,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: 
 --- SARCINA 2.9 ---
@@ -151,7 +151,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: La revedere!
 
@@ -168,7 +168,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea:   Ce cutie afisam (1-8 sau "toate"):     Tabelul cutiei-S S3 (liniile = bitii b1b6, coloanele = b2b3b4b5):
            0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
@@ -182,6 +182,6 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: La revedere!

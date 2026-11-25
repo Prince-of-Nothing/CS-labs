@@ -105,7 +105,7 @@ Introduceti criptograma:
 Perechi din criptograma: ĂA OT PI FO RÎ RN CT YK AP YE RI SI LĂ VO MN WC TA RA UÂ IL NI SI
 CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
 
-Mesaj decriptat (spațiile dintre cuvinte se restaulesază manual):
+Mesaj decriptat (spațiile dintre cuvinte se adaugă manual):
 CRIPTOGRAFIAESTEOSTIINTAFRUMOASASIIMPORTANTA
 
 Optiuni:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Capture Lab 4 session: DES round schedule, full encryption, task 2.9, S-boxes, FIPS test.
+# Capture Lab 4 session: DES round schedule, full encryption, task 2.9, S-boxes, classic DES test.
 set -u
 cd /home/user/Documents/GitHub/CS-labs/Lab4
 
@@ -8,7 +8,7 @@ KEY=133457799BBCDFF1
 # K5 XOR E(R4), taken din rularea meniului 4 (reproducibila cu --seed)
 V5=110001100000010100000011111010110101000110100010
 
-echo '$ python3 des_lab.py --seed     # meniul 5: test de verificare (vectorul FIPS)'
+echo '$ python3 des_lab.py --seed     # meniul 5: test de verificare (vectorul clasic DES)'
 printf '5\n0\n' | python3 des_lab.py --seed
 echo
 

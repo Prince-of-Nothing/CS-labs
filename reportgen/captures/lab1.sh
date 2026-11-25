@@ -26,3 +26,7 @@ echo
 echo '$ ./caesar                      # Sarcina 1.2: decriptarea cu acelasi cuvant-cheie'
 KCIP=$(printf '2\n1\n3\nROMANIA\n%s\n' "$KWMSG" | ./caesar | sed -n 's/.*Ciphertext: //p')
 printf '2\n2\n3\nROMANIA\n%s\n' "$KCIP" | ./caesar
+echo
+
+echo '$ ./caesar                      # Sarcina 1.2: verificarea cuvantului-cheie'
+printf '2\n1\n3\nabece\nchei!\nROMANIA\ntest\n' | ./caesar

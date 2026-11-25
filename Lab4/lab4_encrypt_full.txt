@@ -10,7 +10,7 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea:   Blocul de text clar (8 octeti hex):   Cheia (8 octeti hex):   Textul clar (64 biti) : 0123456789ABCDEF
   Dupa IP               : 1100110000000000110011001111111111110000101010101111000010101010
@@ -188,6 +188,6 @@ Optiuni:
   2 = Afișarea cutiilor-S (tabelele folosite)
   3 = Programul de chei (PC-1, deplasari, PC-2, K1..K16)
   4 = Criptarea completa a unui bloc (toate cele 16 runde)
-  5 = Test de verificare (vectorul FIPS)
+  5 = Test de verificare (vectorul clasic DES)
   0 = Iesire
 Alegeti optiunea: La revedere!

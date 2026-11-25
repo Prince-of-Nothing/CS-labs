@@ -30,6 +30,10 @@ P_2048 = int("""3231700607131100730015351347782516336248805713348907517458843413
 4088120031105907484281003994966956119696956248629032338072839127039""".replace("\n", ""))
 G = 2
 Q_ORDER = (P_2048 - 1) // 2          # P_2048 is a safe prime, ord(2) = Q_ORDER
+# Secret values (p, q, x, k, a, b) come from the operating system's CSPRNG;
+# the Mersenne Twister in plain `random` is predictable and not suitable
+# for keys.
+RNG = random.SystemRandom()
 MSG = "Dinu Plesu"
 
 
@@ -68,7 +72,7 @@ def is_prime(n, k=16):
 
 def gen_prime(bits):
     while True:
-        c = random.getrandbits(bits) | (1 << (bits - 1)) | 3
+        c = RNG.getrandbits(bits) | (1 << (bits - 1)) | 3
         if c % 3 and c % 5 and is_prime(c):
             return c
 
@@ -106,9 +110,9 @@ def elgamal():
     print("== Sarcina 2.2 ElGamal (p 2048 biti, g=2) ==")
     print(f"P = {short(P_2048)}  ({P_2048.bit_length()} biți), prim: {is_prime(P_2048)}")
     print(f"q=(p-1)/2 prim (safe prime): {is_prime(Q_ORDER)}, ordinul lui g=2 este q: {pow(G, Q_ORDER, P_2048) == 1}")
-    x = random.randrange(2, Q_ORDER - 2) + 2
+    x = RNG.randrange(2, Q_ORDER)   # 2 <= secret < q
     y = pow(G, x, P_2048)
-    k = random.randrange(2, Q_ORDER - 2) + 2
+    k = RNG.randrange(2, Q_ORDER)   # 2 <= secret < q
     c1 = pow(G, k, P_2048)
     s = pow(y, k, P_2048)
     c2 = m * s % P_2048
@@ -125,8 +129,8 @@ def elgamal():
 
 def dh():
     print("== Sarcina 3 Diffie-Hellman (Alisa & Bob) + AES-256 ==")
-    a = random.randrange(2, Q_ORDER - 2) + 2
-    b = random.randrange(2, Q_ORDER - 2) + 2
+    a = RNG.randrange(2, Q_ORDER)   # 2 <= secret < q
+    b = RNG.randrange(2, Q_ORDER)   # 2 <= secret < q
     A = pow(G, a, P_2048)
     B = pow(G, b, P_2048)
     Ka = pow(B, a, P_2048)

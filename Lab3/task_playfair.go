@@ -246,6 +246,6 @@ func runPlayfair(s *scanner) {
 		fmt.Printf("\nPerechi din criptograma: %s\n", splitDigraphs(text))
 		pt := playfairRun(matrix, text, true)
 		wrapText(pt, 60)
-		fmt.Printf("\nMesaj decriptat (spațiile dintre cuvinte se restaulesază manual):\n%s\n", pt)
+		fmt.Printf("\nMesaj decriptat (spațiile dintre cuvinte se adaugă manual):\n%s\n", pt)
 	}
 }

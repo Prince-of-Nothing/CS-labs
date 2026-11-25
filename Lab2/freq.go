@@ -122,8 +122,9 @@ func printFrequencyTable(stats []letterStat) {
 
 // chiSquare measures how well the current substitution reproduces the
 // reference frequency distribution of the language (lower is better).
-// Only letters that have an assigned plaintext letter are counted, so the
-// score decreases steadily as more of the key is recovered.
+// Only letters that have an assigned plaintext letter are counted. The
+// frequency-ranking mapping is close to the minimum by construction, so the
+// correct key can score higher than it: the score is a guide, not a proof.
 func chiSquare(counts map[rune]int, total int, assign map[rune]rune, p *langProfile) float64 {
 	var chi float64
 	assigned := 0.0
@@ -363,10 +364,11 @@ func runAttack(reader *scanner, p *langProfile) {
 	}
 	counts := countFrequency(cipher)
 	stats := buildStats(counts, len(cipher), nil, p)
-	fmt.Printf("\nLungimea textului analizat: %d litere\n", len(cipher))
-	printFrequencyTable(stats)
-
 	assign := autoDecrypt(p, stats)
+	fmt.Printf("\nLungimea textului analizat: %d litere\n", len(cipher))
+	// the "% asteptat" column shows the reference frequency of the plain
+	// letter chosen by the automatic mapping, so both rankings are visible
+	printFrequencyTable(buildStats(counts, len(cipher), assign, p))
 	fmt.Println("\nSubstitutie automata (cea mai freq. litera din criptograma -> cea mai freq. litera a limbii):")
 	sortedAssign := make([]rune, 0, len(assign))
 	for c := range assign {
@@ -383,7 +385,7 @@ func runAttack(reader *scanner, p *langProfile) {
 	fmt.Printf("\nChi-square al substitutiei automate: %.1f (cu cat e mai mic, cu atat se apropie mai mult de limba tinta)\n", chiSquare(counts, len(cipher), assign, p))
 
 	// manual refinement loop
-	fmt.Println("\nEtapa interactiva: affinati corespondentele (traseuri de personalitate ale literelor,")
+	fmt.Println("\nEtapa interactiva: afinati corespondentele (traseuri de personalitate ale literelor,")
 	fmt.Println("ex. cuvinte de 2-3 litere, digrafe/trigrafe frecvente). Comenzi:")
 	fmt.Println("   <CIFRATA>=<CLARA>   ex: S=E     (asigneaza / schimba o corespondenta)")
 	fmt.Println("   del <CIFRATA>       sterge o asignare")
