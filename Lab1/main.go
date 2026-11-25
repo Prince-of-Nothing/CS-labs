@@ -11,34 +11,43 @@ import (
 var input = bufio.NewScanner(os.Stdin)
 
 func main() {
-	fmt.Println("Romanian Caesar Ciphers")
-	fmt.Println("1. Caesar cipher")
-	fmt.Println("2. Caesar cipher with keyword permutation")
+	for {
+		fmt.Println()
+		fmt.Println("Romanian Caesar Ciphers")
+		fmt.Println("1. Caesar cipher")
+		fmt.Println("2. Caesar cipher with keyword permutation")
+		fmt.Println("0. Exit")
 
-	cipherType := readChoice("Choose cipher (1-2): ", 1, 2)
-	fmt.Println("1. Encrypt")
-	fmt.Println("2. Decrypt")
-	operation := readChoice("Choose operation (1-2): ", 1, 2)
-	shift := readShift()
+		cipherType := readChoice("Choose cipher (0-2): ", 0, 2)
+		if cipherType == 0 {
+			return
+		}
+		fmt.Println("1. Encrypt")
+		fmt.Println("2. Decrypt")
+		operation := readChoice("Choose operation (1-2): ", 1, 2)
+		shift := readShift()
 
-	var keyword []rune
-	if cipherType == 2 {
-		keyword = readKeyword()
-		alphabet := buildPermutedAlphabet(keyword)
-		fmt.Printf("Permuted alphabet: %s\n", joinRunes(alphabet, " "))
-	}
+		var keyword []rune
+		if cipherType == 2 {
+			keyword = readKeyword()
+			alphabet := buildPermutedAlphabet(keyword)
+			fmt.Printf("Permuted alphabet: %s\n", joinRunes(alphabet, " "))
+		}
 
-	message := readMessage()
-	var result string
-	if cipherType == 1 {
-		result = caesarCipher(message, shift, operation == 1)
-	} else {
-		result = keywordCaesarCipher(message, buildPermutedAlphabet(keyword), shift, operation == 1)
-	}
-	if operation == 1 {
-		fmt.Printf("Ciphertext: %s\n", result)
-	} else {
-		fmt.Printf("Plaintext: %s\n", result)
+		message := readMessage()
+		var result string
+		if cipherType == 1 {
+			result = caesarCipher(message, shift, operation == 1)
+		} else {
+			result = keywordCaesarCipher(message, buildPermutedAlphabet(keyword), shift, operation == 1)
+		}
+		if operation == 1 {
+			fmt.Printf("Ciphertext: %s\n", result)
+		} else {
+			fmt.Printf("Plaintext: %s\n", result)
+		}
+
+		readLine("\nPress Enter to continue...")
 	}
 }
 

@@ -1,0 +1,1 @@
+go run -C Lab2 .
